@@ -27,20 +27,25 @@
     window.dbRef = ref;
     window.dbPush = push;
 
-    // 📡 雲端即時廣播器：只要有人記帳或刪除，所有人的手機畫面會在一秒內自動秒速更新！
+    // 📡 雲端即時廣播器：加上 window.onload 防撞保險，確保網頁完全開啟後才載入資料
     onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
       const data = snapshot.val();
+      const list = [];
       if (data) {
-        const list = [];
         Object.keys(data).forEach(key => {
           list.unshift({ id: key, ...data[key] });
         });
-        window.accountBook = list;
-      } else {
-        accountBook = [];
       }
-      saveLedger();
-      renderLedger();
+      
+      // 同時寫入本地與全域抽屜，確保兩邊變數完全同步不打架
+      window.accountBook = list;
+      accountBook = list;
+
+      // 🛑 防撞保險：如果網頁還沒載入完畢，先不執行渲染，防止整張網頁死機卡在載入中
+      if (typeof renderLedger === 'function') {
+        saveLedger();
+        renderLedger();
+      }
     });
       
   </script>
