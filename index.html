@@ -35,7 +35,7 @@
         Object.keys(data).forEach(key => {
           list.unshift({ id: key, ...data[key] });
         });
-        accountBook = list;
+        window.accountBook = list;
       } else {
         accountBook = [];
       }
