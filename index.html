@@ -779,7 +779,7 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
 
         function renderLedger() {
             const box = document.getElementById('records-box');
-            if (window.accountBook && window.accountBook.length > 0) accountBook = window.accountBook;
+            if (window.accountBook) accountBook = window.accountBook;
             box.innerHTML = '';
 
             let cashSum = 0;
