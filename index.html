@@ -732,14 +732,20 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
             showToast("🚀 支出已成功發射同步至雲端！");
         }
         
-        function function deleteRecord(id) {
+       function deleteRecord(id) {
   accountBook = accountBook.filter(item => item.id !== id.toString());
   saveLedger();
   renderLedger();
   showToast("🗑 正在同步雲端刪除...");
-  import("https://gstatic.com").then((mod) => {
-    mod.remove(mod.ref(window.dbDatabase, 'okinawa_ledger/' + id)).catch(e => console.log(e));
-  });
+  if (window.dbDatabase) {
+  const db = window.dbDatabase;
+  const dbRef = window.dbRef;
+  if (typeof dbRef === 'function') {
+    import("https://gstatic.com").then((mod) => {
+      mod.remove(mod.ref(db, 'okinawa_ledger/' + id)).catch(e => console.log(e));
+    });
+  }
+}
 }
         }
 
