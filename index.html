@@ -321,6 +321,39 @@
                         清空所有記錄
                     </button>
                 </div>
+                
+                <div class="flex gap-2 overflow-x-auto no-scrollbar py-1 mb-2">
+    <button onclick="setLedgerDay('all')" id="ledger-day-all"
+        class="ledger-day-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-600 text-white">
+        全部
+    </button>
+
+    <button onclick="setLedgerDay(0)" id="ledger-day-0"
+        class="ledger-day-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600">
+        DAY 1
+    </button>
+
+    <button onclick="setLedgerDay(1)" id="ledger-day-1"
+        class="ledger-day-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600">
+        DAY 2
+    </button>
+
+    <button onclick="setLedgerDay(2)" id="ledger-day-2"
+        class="ledger-day-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600">
+        DAY 3
+    </button>
+
+    <button onclick="setLedgerDay(3)" id="ledger-day-3"
+        class="ledger-day-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600">
+        DAY 4
+    </button>
+</div>
+
+<div id="ledger-day-total"
+    class="text-xs text-slate-500 mb-2 px-1">
+    顯示全部旅程消費
+</div>
+                
                 <div id="records-box" class="divide-y divide-slate-100 max-h-80 overflow-y-auto">
                     <!-- 動態消費項目 -->
                 </div>
@@ -1030,6 +1063,28 @@ function saveLedger() {
 
 // ==================== 顯示記帳＋重新計算總和 ====================
 
+let currentLedgerDay = 'all';
+
+function setLedgerDay(day) {
+  currentLedgerDay = day;
+
+  document.querySelectorAll('.ledger-day-btn').forEach(btn => {
+    btn.classList.remove('bg-blue-600', 'text-white');
+    btn.classList.add('bg-slate-100', 'text-slate-600');
+  });
+
+  const activeBtn = document.getElementById(
+    day === 'all' ? 'ledger-day-all' : `ledger-day-${day}`
+  );
+
+  if (activeBtn) {
+    activeBtn.classList.remove('bg-slate-100', 'text-slate-600');
+    activeBtn.classList.add('bg-blue-600', 'text-white');
+  }
+
+  renderLedger();
+}
+        
 function renderLedger() {
 
   const box = document.getElementById('records-box');
@@ -1052,7 +1107,13 @@ function renderLedger() {
 
   } else {
 
-    accountBook.forEach(item => {
+    accountBook
+  .filter(item =>
+    currentLedgerDay === 'all' ||
+    Number(item.day) === Number(currentLedgerDay)
+  )
+  .forEach(item => {
+
 
       const amount = Number(item.amount) || 0;
       const twd = Number(item.twd) || 0;
@@ -1162,6 +1223,17 @@ function renderLedger() {
 
   document.getElementById('sum-cash').innerText =
     `¥${cashSum.toLocaleString()}`;
+ 
+    const dayTotalBox = document.getElementById('ledger-day-total');
+
+if (dayTotalBox) {
+  if (currentLedgerDay === 'all') {
+    dayTotalBox.innerText = `顯示全部旅程消費｜共 ¥${allForeign.toLocaleString()}（約 NT$ ${allTwd.toLocaleString()}）`;
+  } else {
+    dayTotalBox.innerText =
+      `DAY ${Number(currentLedgerDay) + 1} 小計｜¥${allForeign.toLocaleString()}（約 NT$ ${allTwd.toLocaleString()}）`;
+  }
+}
 
   document.getElementById('sum-card').innerText =
     `¥${cardSum.toLocaleString()}`;
