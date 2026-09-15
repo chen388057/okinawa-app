@@ -32,13 +32,15 @@
   const db = getDatabase(app);
   const ledgerRef = ref(db, "okinawa_ledger");
 
-  // 提供給記帳本使用
   window.dbDatabase = db;
   window.dbRef = ref;
   window.dbPush = push;
   window.dbOnValue = onValue;
   window.dbRemove = remove;
   window.ledgerRef = ledgerRef;
+
+  // 通知普通 script：Firebase 已初始化完成
+  window.dispatchEvent(new Event('firebase-ready'));
 </script>
 
     <!-- Tailwind CSS CDN -->
@@ -564,8 +566,24 @@
     renderTickets();
     renderLedger();
     convertCurrency('jpy');
-
     loadLedgerFromFirebase();
+            async function deleteRecord(id) {
+    if (!window.dbRemove || !window.dbDatabase || !window.dbRef) {
+        showToast("❌ 雲端連線尚未就緒");
+        return;
+    }
+
+    try {
+        await window.dbRemove(
+            window.dbRef(window.dbDatabase, `okinawa_ledger/${id}`)
+        );
+
+        showToast("🗑️ 已移除該筆紀錄");
+    } catch (error) {
+        console.error("刪除失敗：", error);
+        showToast("❌ 刪除失敗");
+    }
+}
 };
 
         // 渲染天數按鈕
@@ -751,6 +769,10 @@
         showToast("❌ 儲存失敗，請檢查網路或 Firebase 權限");
     }
 }
+window.addEventListener('firebase-ready', () => {
+    loadLedgerFromFirebase();
+});
+        
 function loadLedgerFromFirebase() {
     if (typeof window.dbOnValue !== 'function' || !window.ledgerRef) {
         return;
