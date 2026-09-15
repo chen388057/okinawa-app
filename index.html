@@ -35,10 +35,13 @@
           list.unshift({ id: key, ...data[key] });
         });
       }
-      window.accountBook = list; // 👈 存入打通後的全域抽屜
-      if (typeof renderLedger === 'function') {
-        renderLedger(); // 👈 立刻逼畫面重新畫出來
-      }
+      window.accountBook = list; // 💡 強制塞入公開共享箱子
+accountBook = list;
+if (typeof window.renderLedger === 'function') {
+    window.renderLedger(); // 💡 穿透防火牆直接通知下方畫面刷新
+} else if (typeof renderLedger === 'function') {
+    renderLedger();
+}
     });
       
   </script>
@@ -767,6 +770,7 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
 
         function saveLedger() {
   try {
+    // 💡 修正後：優先去存 window.accountBook 這個共享大箱子，重新整理就絕對不會再被洗空！
     localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(window.accountBook || accountBook || []));
   } catch (e) {
     console.error(e);
@@ -775,6 +779,7 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
 
         function renderLedger() {
             const box = document.getElementById('records-box');
+            if (window.accountBook && window.accountBook.length > 0) accountBook = window.accountBook;
             box.innerHTML = '';
 
             let cashSum = 0;
