@@ -771,7 +771,11 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
         function saveLedger() {
   try {
     // 💡 修正後：優先去存 window.accountBook 這個共享大箱子，重新整理就絕對不會再被洗空！
-    localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(window.accountBook || accountBook || []));
+    if (window.accountBook && window.accountBook.length > 0) {
+      localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(window.accountBook));
+    } else if (accountBook && accountBook.length > 0) {
+      localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(accountBook));
+    }
   } catch (e) {
     console.error(e);
   }
