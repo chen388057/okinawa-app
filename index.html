@@ -31,6 +31,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const ledgerRef = ref(db, "okinawa_ledger");
+  const customSpotsRef = ref(db, "okinawa_custom_spots");
 
   window.dbDatabase = db;
   window.dbRef = ref;
@@ -38,6 +39,7 @@
   window.dbOnValue = onValue;
   window.dbRemove = remove;
   window.ledgerRef = ledgerRef;
+  window.customSpotsRef = customSpotsRef;
 
   // 通知普通 script：Firebase 已初始化完成
   window.dispatchEvent(new Event('firebase-ready'));
@@ -573,7 +575,10 @@
     if (typeof window.dbOnValue === 'function' && window.ledgerRef) {
         loadLedgerFromFirebase();
     }
-};
+if (typeof window.dbOnValue === 'function' && window.customSpotsRef) {
+    loadCustomSpotsFromFirebase();
+}
+        };
 
         
         
@@ -1158,36 +1163,143 @@ function renderLedger() {
             document.getElementById('modal-add-spot').classList.remove('flex');
         }
 
-        function saveCustomSpot() {
-            const dayIdx = parseInt(document.getElementById('modal-spot-day').value, 10);
-            const time = document.getElementById('modal-spot-time').value.trim() || '任意時間';
-            const name = document.getElementById('modal-spot-name').value.trim();
-            const memo = document.getElementById('modal-spot-memo').value.trim();
+       function loadCustomSpotsFromFirebase() {
+    if (typeof window.dbOnValue !== 'function' || !window.customSpotsRef) {
+        return;
+    }
 
-            if (!name) {
-                showToast("⚠️ 請填寫景點或餐廳名稱！");
-                return;
-            }
+    window.dbOnValue(window.customSpotsRef, async (snapshot) => {
+        const data = snapshot.val();
 
-            if (!customSpots[dayIdx]) {
-                customSpots[dayIdx] = [];
-            }
+        // Firebase 有資料 → 直接同步到目前裝置
+        if (data) {
+            const syncedSpots = {
+                0: [],
+                1: [],
+                2: [],
+                3: []
+            };
 
-            customSpots[dayIdx].push({
-                time: time,
-                name: name,
-                memo: memo,
-                map: name
+            Object.keys(data).forEach((dayIdx) => {
+                const items = data[dayIdx] || {};
+
+                syncedSpots[dayIdx] = Object.entries(items)
+                    .map(([id, item]) => ({
+                        id: id,
+                        ...item
+                    }))
+                    .sort((a, b) =>
+                        (a.createdAt || 0) - (b.createdAt || 0)
+                    );
             });
 
-            localStorage.setItem(STORAGE_CUSTOM_SPOTS_KEY, JSON.stringify(customSpots));
-            closeAddSpotModal();
-            renderDay(currentDayIdx);
-            showToast("✨ 新站點已成功加入時間軸！");
+            customSpots = syncedSpots;
 
-            document.getElementById('modal-spot-name').value = '';
-            document.getElementById('modal-spot-memo').value = '';
+            localStorage.setItem(
+                STORAGE_CUSTOM_SPOTS_KEY,
+                JSON.stringify(customSpots)
+            );
+
+            renderDay(currentDayIdx);
+            return;
         }
+
+        // Firebase 還沒有資料，但這台裝置已有舊的 localStorage
+        // → 自動把舊資料搬到 Firebase
+        const hasLocalData = Object.values(customSpots).some(
+            arr => Array.isArray(arr) && arr.length > 0
+        );
+
+        if (hasLocalData) {
+            for (const dayIdx of Object.keys(customSpots)) {
+                const spots = customSpots[dayIdx] || [];
+
+                for (const spot of spots) {
+                    await window.dbPush(
+                        window.dbRef(
+                            window.dbDatabase,
+                            `okinawa_custom_spots/${dayIdx}`
+                        ),
+                        {
+                            time: spot.time || '任意時間',
+                            name: spot.name || '',
+                            memo: spot.memo || '',
+                            map: spot.map || spot.name || '',
+                            createdAt: spot.createdAt || Date.now()
+                        }
+                    );
+                }
+            }
+
+            showToast("☁️ 原有自訂站點已同步到雲端！");
+        }
+
+        renderDay(currentDayIdx);
+
+    }, (error) => {
+        console.error("Firebase 讀取自訂站點失敗：", error);
+
+        // Firebase 失敗時仍使用本機資料
+        renderDay(currentDayIdx);
+    });
+}
+        
+        async function saveCustomSpot() {
+    const dayIdx = parseInt(document.getElementById('modal-spot-day').value, 10);
+    const time = document.getElementById('modal-spot-time').value.trim() || '任意時間';
+    const name = document.getElementById('modal-spot-name').value.trim();
+    const memo = document.getElementById('modal-spot-memo').value.trim();
+
+    if (!name) {
+        showToast("⚠️ 請填寫景點或餐廳名稱！");
+        return;
+    }
+
+    if (!customSpots[dayIdx]) {
+        customSpots[dayIdx] = [];
+    }
+
+    const newSpot = {
+        time: time,
+        name: name,
+        memo: memo,
+        map: name,
+        createdAt: Date.now()
+    };
+
+    // 先保留本機資料，避免 Firebase 暫時連不上時資料消失
+    customSpots[dayIdx].push(newSpot);
+    localStorage.setItem(
+        STORAGE_CUSTOM_SPOTS_KEY,
+        JSON.stringify(customSpots)
+    );
+
+    closeAddSpotModal();
+    renderDay(currentDayIdx);
+
+    document.getElementById('modal-spot-name').value = '';
+    document.getElementById('modal-spot-memo').value = '';
+
+    // 同步到 Firebase
+    if (typeof window.dbPush === 'function' && window.customSpotsRef) {
+        try {
+            await window.dbPush(
+                window.dbRef(
+                    window.dbDatabase,
+                    `okinawa_custom_spots/${dayIdx}`
+                ),
+                newSpot
+            );
+
+            showToast("☁️ 新站點已同步到雲端！");
+        } catch (error) {
+            console.error("Firebase 自訂站點同步失敗：", error);
+            showToast("📱 已儲存在本機，雲端同步失敗");
+        }
+    } else {
+        showToast("✨ 新站點已加入時間軸！");
+    }
+}
 
         // 吐司提示窗
         function showToast(msg) {
