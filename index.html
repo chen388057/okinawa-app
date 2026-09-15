@@ -28,6 +28,18 @@
         window.dbDatabase = getDatabase(app);
         window.dbRef = ref;
         window.dbPush = push;
+        onValue(ref(window.dbDatabase, 'okinawa_ledger'), (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    const list = [];
+    Object.keys(data).forEach(key => {
+      list.unshift({ id: key, ...data[key] });
+    });
+    accountBook = list;
+    saveLedger();
+    renderLedger();
+  }
+});
 </script>
 
     <!-- Tailwind CSS CDN -->
