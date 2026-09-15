@@ -738,9 +738,7 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
   renderLedger();
   showToast("🗑 正在同步雲端刪除...");
   if (window.dbDatabase) {
-  const db = window.dbDatabase;
-  const dbRef = window.dbRef;
-  if (typeof dbRef === 'function') {
+    const db = window.dbDatabase;
     import("https://gstatic.com").then((mod) => {
       mod.remove(mod.ref(db, 'okinawa_ledger/' + id)).catch(e => console.log(e));
     });
