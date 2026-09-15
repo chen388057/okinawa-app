@@ -27,8 +27,22 @@
     window.dbRef = ref;
     window.dbPush = push;
 
-    // 即時下載雲端帳目廣播機：只要任何人記帳，大家的網頁畫面就會在 1 秒內自動跳出明細！
-    
+    // 📡 雲端即時廣播器：只要有人記帳或刪除，所有人的手機畫面會在一秒內自動秒速更新！
+    onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = [];
+        Object.keys(data).forEach(key => {
+          list.unshift({ id: key, ...data[key] });
+        });
+        accountBook = list;
+      } else {
+        accountBook = [];
+      }
+      saveLedger();
+      renderLedger();
+    });
+      
   </script>
 
     <!-- Tailwind CSS CDN -->
