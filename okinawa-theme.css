@@ -180,4 +180,28 @@ header {
 .bg-white {
   background: #FFFEFB !important;
 }
+select,
+input,
+textarea {
+  background-color: #FFFFFF !important;
+  color: #454640 !important;
+  border-color: #DCD6CA !important;
+}
+
+select option {
+  background-color: #FFFFFF !important;
+  color: #454640 !important;
+}
+
+button {
+  color: inherit;
+}
+
+/* 白色文字的彩色按鈕維持白色 */
+.bg-blue-600,
+.bg-blue-700,
+.bg-sky-600,
+.bg-indigo-600 {
+  color: #FFFFFF !important;
+}
 ```
