@@ -727,81 +727,282 @@
             showToast("🗑️ 已移除該憑證");
         }
 
-        // 記帳本功能
-      async function addRecord() {
-    const category = document.getElementById('ins-category').value;
-    const type = document.getElementById('ins-type').value;
-    const desc = document.getElementById('ins-desc').value.trim() || '日常花費';
-    const amount = parseFloat(document.getElementById('ins-amount').value);
+        // ==================== 記帳本功能 ====================
 
-    if (!Number.isFinite(amount) || amount <= 0) {
-        showToast("⚠️ 請輸入正確的日圓金額！");
-        return;
-    }
+async function addRecord() {
+  const category = document.getElementById('ins-category').value;
+  const type = document.getElementById('ins-type').value;
+  const desc = document.getElementById('ins-desc').value.trim() || '日常花費';
+  const amount = parseFloat(document.getElementById('ins-amount').value);
 
-    const twd = Math.round(amount * currentRate);
-    const now = new Date();
+  if (!Number.isFinite(amount) || amount <= 0) {
+    showToast("⚠️ 請輸入正確的日圓金額！");
+    return;
+  }
 
-    const item = {
-        category,
-        type,
-        desc,
-        amount,
-        twd,
-        time: `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
-        createdAt: Date.now()
-    };
+  const twd = Math.round(amount * currentRate);
+  const now = new Date();
 
-    if (typeof window.dbPush !== 'function' || !window.ledgerRef) {
-        showToast("⏳ 雲端同步連線中，請稍候重試...");
-        return;
-    }
+  const time = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
-    try {
-        await window.dbPush(window.ledgerRef, item);
+  const item = {
+    category,
+    type,
+    desc,
+    amount,
+    twd,
+    time,
+    createdAt: Date.now()
+  };
 
-        document.getElementById('ins-amount').value = '';
-        document.getElementById('ins-desc').value = '';
+  if (
+    typeof window.dbPush !== 'function' ||
+    typeof window.dbRef !== 'function' ||
+    !window.dbDatabase
+  ) {
+    showToast("⏳ 雲端同步連線中，請稍候重試...");
+    return;
+  }
 
-        showToast("✅ 支出已成功同步至雲端！");
-    } catch (error) {
-        console.error("Firebase 儲存失敗：", error);
-        showToast("❌ 儲存失敗，請檢查網路或 Firebase 權限");
-    }
+  try {
+    // 寫入 Firebase
+    await window.dbPush(
+      window.dbRef(window.dbDatabase, 'okinawa_ledger'),
+      item
+    );
+
+    // 清空輸入框
+    document.getElementById('ins-amount').value = '';
+    document.getElementById('ins-desc').value = '';
+
+    showToast("✅ 支出已成功同步至雲端！");
+  } catch (error) {
+    console.error("Firebase 新增失敗：", error);
+    showToast("❌ 儲存失敗，請檢查網路或 Firebase 權限");
+  }
 }
-window.addEventListener('firebase-ready', () => {
-    loadLedgerFromFirebase();
-});
-        
-function loadLedgerFromFirebase() {
-    if (typeof window.dbOnValue !== 'function' || !window.ledgerRef) {
-        return;
-    }
 
-    window.dbOnValue(window.ledgerRef, (snapshot) => {
-        const data = snapshot.val();
 
-        accountBook = data
-            ? Object.entries(data).map(([id, item]) => ({
-                ...item,
-                id
-            })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
-            : [];
+// ==================== 刪除單筆記帳 ====================
 
-        renderLedger();
-    }, (error) => {
-        console.error("Firebase 讀取失敗：", error);
-        showToast("❌ 無法讀取雲端記帳資料");
+async function deleteRecord(id) {
+
+  if (
+    typeof window.dbRemove !== 'function' ||
+    typeof window.dbRef !== 'function' ||
+    !window.dbDatabase
+  ) {
+    showToast("❌ 雲端資料庫尚未連線");
+    return;
+  }
+
+  try {
+
+    const recordRef = window.dbRef(
+      window.dbDatabase,
+      `okinawa_ledger/${id}`
+    );
+
+    await window.dbRemove(recordRef);
+
+    showToast("🗑️ 已刪除該筆紀錄");
+
+  } catch (error) {
+
+    console.error("Firebase 刪除失敗：", error);
+
+    showToast("❌ 刪除失敗，請稍後再試");
+  }
+}
+
+
+// ==================== 清空全部記帳 ====================
+
+async function clearAllExpenses() {
+
+  if (!accountBook || accountBook.length === 0) {
+    showToast("目前沒有記帳資料");
+    return;
+  }
+
+  if (!window.confirm("確定要清空所有的消費明細嗎？")) {
+    return;
+  }
+
+  if (
+    typeof window.dbRemove !== 'function' ||
+    typeof window.dbRef !== 'function' ||
+    !window.dbDatabase
+  ) {
+    showToast("❌ 雲端資料庫尚未連線");
+    return;
+  }
+
+  try {
+
+    await window.dbRemove(
+      window.dbRef(window.dbDatabase, 'okinawa_ledger')
+    );
+
+    showToast("🗑️ 已清空所有記帳明細");
+
+  } catch (error) {
+
+    console.error("Firebase 清空失敗：", error);
+
+    showToast("❌ 清空失敗，請稍後再試");
+  }
+}
+
+
+// ==================== 本機備份 ====================
+
+function saveLedger() {
+
+  try {
+
+    localStorage.setItem(
+      STORAGE_EXPENSES_KEY,
+      JSON.stringify(accountBook)
+    );
+
+  } catch (e) {
+
+    console.error("LocalStorage 儲存失敗：", e);
+
+  }
+}
+
+
+// ==================== 顯示記帳資料＋重新計算總和 ====================
+
+function renderLedger() {
+
+  const box = document.getElementById('records-box');
+
+  box.innerHTML = '';
+
+  let cashSum = 0;
+  let cardSum = 0;
+  let allForeign = 0;
+  let allTwd = 0;
+
+
+  if (!accountBook || accountBook.length === 0) {
+
+    box.innerHTML = `
+      <div class="text-center py-6 text-slate-400 text-xs">
+        目前尚無任何消費記錄，點擊上方儲存第一筆吧！
+      </div>
+    `;
+
+  } else {
+
+    accountBook.forEach(item => {
+
+      // 確保金額一定是數字
+      const amount = Number(item.amount) || 0;
+      const twd = Number(item.twd) || 0;
+
+      // 現金
+      if (String(item.type || '').includes('現金')) {
+
+        cashSum += amount;
+
+      } else {
+
+        // 刷卡／其他非現金
+        cardSum += amount;
+
+      }
+
+      // 全部支出
+      allForeign += amount;
+      allTwd += twd;
+
+
+      // Firebase 的 ID 是字串，所以一定要用 JSON.stringify
+      const safeId = JSON.stringify(String(item.id));
+
+      const row = document.createElement('div');
+
+      row.className =
+        'py-2.5 flex items-center justify-between text-xs hover:bg-slate-50 px-1 rounded-lg transition';
+
+
+      row.innerHTML = `
+        <div class="space-y-0.5">
+
+          <div class="flex items-center gap-1.5">
+
+            <span class="font-bold text-slate-800">
+              ${item.desc || item.category || '日常花費'}
+            </span>
+
+            <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
+              ${item.category || ''}
+            </span>
+
+          </div>
+
+          <div class="text-[10px] text-slate-400">
+            <span>${item.time || item.timeStr || ''}</span>
+            •
+            <span>${item.type || ''}</span>
+          </div>
+
+        </div>
+
+
+        <div class="flex items-center gap-2.5">
+
+          <div class="text-right">
+
+            <div class="font-bold text-slate-800 text-sm">
+              ¥${amount.toLocaleString()}
+            </div>
+
+            <div class="text-[10px] text-slate-400">
+              ≈ NT$ ${twd.toLocaleString()}
+            </div>
+
+          </div>
+
+
+          <button
+            onclick='deleteRecord(${safeId})'
+            class="text-slate-300 hover:text-red-500 text-sm p-1 transition"
+            title="刪除"
+          >
+            &times;
+          </button>
+
+        </div>
+      `;
+
+      box.appendChild(row);
+
     });
-}
-        function saveLedger() {
-            try {
-                localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(accountBook));
-            } catch (e) {
-                console.error(e);
-            }
-        }
 
+  }
+
+
+  // ====================
+  // 更新四個統計數字
+  // ====================
+
+  document.getElementById('sum-cash').innerText =
+    `¥${cashSum.toLocaleString()}`;
+
+  document.getElementById('sum-card').innerText =
+    `¥${cardSum.toLocaleString()}`;
+
+  document.getElementById('sum-all-foreign').innerText =
+    allForeign.toLocaleString();
+
+  document.getElementById('sum-all-twd').innerText =
+    allTwd.toLocaleString();
+}
         function renderLedger() {
             const box = document.getElementById('records-box');
             box.innerHTML = '';
