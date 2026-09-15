@@ -25,6 +25,9 @@
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+        window.dbDatabase = getDatabase(app);
+        window.dbRef = ref;
+        window.dbPush = push;
 </script>
 
     <!-- Tailwind CSS CDN -->
@@ -709,15 +712,8 @@
             
             const item = { category, type, desc, amount, twd, timeStr };
 
-            // 安全性防呆驗證：防範雲端大腦尚未完全就位時的點擊
-            if(typeof window.dbPush !== 'function') {
-                showToast("⏳ 雲端同步連線中，請稍候重試...");
-                return;
-            }
-
-            // 🚀 直接發射、推送到 Firebase 雲端實時資料庫
-            const db = window.dbDatabase;
-            window.dbPush(window.dbRef(db, 'okinawa_ledger'), item);
+            accountBook.unshift(item); saveLedger(); renderLedger();
+try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(window.dbDatabase, 'okinawa_ledger'), item); } } catch(e) { console.log(e); }
 
             // 清空輸入框
             document.getElementById('ins-amount').value = '';
