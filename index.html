@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>202610 沖繩自駕自由行 - 隨身助手</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2b6cb0',
+                        accent: '#4299e1'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom, 16px));
+            background-color: #f8fafc;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* Timeline styling */
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            bottom: 20px;
+            left: 17px;
+            width: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+    </style>
+
+    <!-- ⚡ Firebase 即時雲端模組初始化 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDytE1VeJcAHxk8-qiG5MQM1KRcUDSMW8s",
+            authDomain: "okinawa-defcf.firebaseapp.com",
+            databaseURL: "https://okinawa-defcf-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "okinawa-defcf",
+            storageBucket: "okinawa-defcf.firebasestorage.app",
+            messagingSenderId: "447498921943",
+            appId: "1:447498921943:web:f1c23237db851a3ec74d92"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        window.dbDatabase = db;
+
+        window.dbRef = ref;
+        window.dbPush = push;
+        window.dbRemove = remove;
+        window.dbDatabase = db;
+
+        // 即時雲端監聽記帳資料
+        onValue(ref(db, 'okinawa_ledger'), (snapshot) => {
+            const data = snapshot.val();
+            window.accountBook = [];
+            if (data) {
+                Object.keys(data).forEach(key => {
+                    window.accountBook.push({ id: key, ...data[key] });
+                });
+            }
+            if (typeof window.renderDay === 'function') window.renderDay(0);
+            if (typeof window.renderLedger === 'function') {
+                window.renderLedger();
+                // 🌟 核心接線：當最上方的 Firebase 大腦完全執行就位時，秒速回頭把行程跟票券畫出來！
+            if (typeof renderDay === 'function') renderDay(0);
+            if (typeof renderTickets === 'function') renderTickets();
+            }
+        });
+    </script>
+</head>
+<body class="text-slate-800 antialiased min-h-screen selection:bg-blue-100 selection:text-blue-800">
+
+    <!-- 頂部漸層質感狀態面板 -->
+    <header class="bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600 text-white shadow-md sticky top-0 z-30 pt-safe">
+        <div class="max-w-xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <span class="inline-flex items-center text-xs bg-white/20 text-white font-medium px-2.5 py-1 rounded-full backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> Okinawa 2026 • 雲端多人即時記帳
+                </span>
+                <span class="text-xs text-sky-100 font-mono tracking-wide">4 天 3 夜</span>
+            </div>
+            
+            <h1 class="text-lg font-bold tracking-tight mt-1">沖繩自駕漫遊・購物美食之旅</h1>
+            <p class="text-xs text-blue-100 opacity-90 mt-0.5">2026/10/08 (四) ~ 2026/10/11 (日)</p>
+            
+            <!-- 快速匯率即時氣泡 -->
+            <div class="mt-3 bg-white/10 backdrop-blur-md px-3 py-2 rounded-xl border border-white/15 flex items-center justify-between text-xs">
+                <span class="text-blue-100">當前預設匯率</span>
+                <span class="font-semibold tracking-wide font-mono">1 JPY ≈ <span id="meta-rate-display">0.215</span> TWD</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-xl mx-auto px-4 pt-3 pb-6">
+
+        <!-- 1. 行程分頁 -->
+        <section id="view-schedule" class="tab-content active space-y-3">
+            <div class="flex gap-2 overflow-x-auto no-scrollbar py-1" id="day-tabs"></div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">📍</span>
+                        <h2 class="font-bold text-slate-800 text-sm md:text-base" id="current-day-title">載入中...</h2>
+                    </div>
+                    <span id="spot-count" class="text-xs px-2.5 py-1 bg-blue-50 text-blue-700 font-medium rounded-lg">0 個站點</span>
+                </div>
+
+                <div id="timeline-box" class="mt-4 space-y-4 relative"></div>
+            </div>
+
+            <div class="p-3 bg-blue-50/80 rounded-xl border border-blue-100 flex items-center justify-between text-xs">
+                <div class="text-blue-900">
+                    <span class="font-semibold block">自訂補充站點？</span>
+                    <span class="text-blue-700">可隨時自由記錄臨時追加的私房餐廳或景點</span>
+                </div>
+                <button onclick="openAddSpotModal()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow-sm transition active:scale-95">
+                    <span>＋ 新增</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. 票券憑證分頁 -->
+        <section id="view-tickets" class="tab-content space-y-4">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-1.5">
+                    <span>🎫</span> 新增雲端電子憑證
+                </h3>
+                <div class="space-y-2.5 text-xs">
+                    <div>
+                        <label class="block text-slate-500 mb-1 font-medium">憑證或預約名稱</label>
+                        <input type="text" id="ticket-name" placeholder="例如：虎航去程登機證、美居飯店預約單" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1 font-medium">雲端連結或網址 (URL)</label>
+                        <input type="text" id="ticket-url" placeholder="https://..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <button onclick="saveTicket()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl shadow-sm transition active:scale-98">
+                        儲存至隨身票夾
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+                    <h3 class="font-bold text-slate-800 text-sm flex items-center gap-1.5">
+                        <span>📂</span> 已儲存憑證 (<span id="ticket-count">0</span>)
+                    </h3>
+                    <span class="text-[11px] text-slate-400">點擊直接開啟連結</span>
+                </div>
+                <div id="tickets-list" class="space-y-2"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-1.5 text-indigo-900">
+                    <span>🇯🇵</span> 日本入境與自駕必備清單
+                </h3>
+                <div class="space-y-2 text-xs text-slate-600">
+                    <label class="flex items-start gap-2.5 p-2 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition">
+                        <input type="checkbox" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-blue-500">
+                        <div>
+                            <strong class="text-slate-800 block">台灣護照本體</strong>
+                            <span class="text-slate-500 text-[11px]">出發前確認護照效期需在 6 個月以上。</span>
+                        </div>
+                    </label>
+                    <label class="flex items-start gap-2.5 p-2 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition">
+                        <input type="checkbox" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-blue-500">
+                        <div>
+                            <strong class="text-slate-800 block">自駕雙證件：台灣駕照正本 + 日文譯本</strong>
+                            <span class="text-slate-500 text-[11px]">兩者缺一不可！非國際駕照，務必攜帶台灣監理所核發之正本。</span>
+                        </div>
+                    </label>
+                    <label class="flex items-start gap-2.5 p-2 bg-slate-50 rounded-xl cursor-pointer hover:bg-slate-100 transition">
+                        <input type="checkbox" checked class="w-4 h-4 mt-0.5 rounded text-blue-600 focus:ring-blue-500">
+                        <div>
+                            <strong class="text-slate-800 block">Visit Japan Web (VJW)</strong>
+                            <span class="text-slate-500 text-[11px]">提前填寫入境審查與海關申報，截圖 QR Code 以免網路塞車。</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 記帳本分頁 -->
+        <section id="view-ledger" class="tab-content space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100">
+                    <span class="text-[11px] text-slate-400 block font-medium">💵 累計現金支出</span>
+                    <span id="sum-cash" class="text-lg font-bold text-slate-800 mt-1 block">¥0</span>
+                </div>
+                <div class="bg-white rounded-2xl p-3.5 shadow-sm border border-slate-100">
+                    <span class="text-[11px] text-slate-400 block font-medium">💳 累計刷卡支出</span>
+                    <span id="sum-card" class="text-lg font-bold text-slate-800 mt-1 block">¥0</span>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-white rounded-2xl p-4 shadow-sm text-center">
+                <span class="text-xs text-blue-200 block font-medium">雲端即時總消費</span>
+                <div class="text-2xl font-bold mt-1 text-white flex items-center justify-center gap-1">
+                    <span class="text-sm font-normal text-blue-300">¥</span>
+                    <span id="sum-all-foreign">0</span>
+                </div>
+                <div class="text-xs text-amber-300 mt-0.5">
+                    折合約 NT$ <span id="sum-all-twd" class="font-bold">0</span>
+                </div>
+            </div>
+
+<!-- 📅 增加分天切換按鈕列 -->
+        <div class="mb-4">
+            <label class="block text-xs font-bold text-slate-500 mb-2">📅 選擇目前記帳與檢視的天數：</label>
+            <div class="flex gap-1.5 overflow-x-auto pb-1" id="ledger-day-tabs">
+                
+                <button onclick="window.setLedgerDay('1', this)" class="ledger-day-btn px-3 py-1.5 rounded-full font-bold text-xs border bg-blue-600 text-white border-blue-600">Day1 (10/08) </button>
+                <button onclick="window.setLedgerDay('2', this)" class="ledger-day-btn px-3 py-1.5 rounded-full font-bold text-xs border bg-white text-slate-600 border-slate-200">Day2 (10/09) </button>
+                <button onclick="window.setLedgerDay('3', this)" class="ledger-day-btn px-3 py-1.5 rounded-full font-bold text-xs border bg-white text-slate-600 border-slate-200">Day3 (10/10) </button>
+                <button onclick="window.setLedgerDay('4', this)" class="ledger-day-btn px-3 py-1.5 rounded-full font-bold text-xs border bg-white text-slate-600 border-slate-200">Day4 (10/11) </button>
+            </div>
+        </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-1.5">
+                    <span>✍️</span> 快速記一筆支出 (即時同步雲端)
+                </h3>
+                <div class="space-y-3 text-xs">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-slate-500 mb-1 font-medium">消費類別</label>
+                            <select id="ins-category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700">
+                                <option value="🍱 餐飲美食">🍱 餐飲美食</option>
+                                <option value="🚗 交通自駕">🚗 交通自駕</option>
+                                <option value="🛍️ 購物藥妝">🛍️ 購物藥妝</option>
+                                <option value="🎟️ 門票景點">🎟️ 門票景點</option>
+                                <option value="🏨 住宿飯店">🏨 住宿飯店</option>
+                                <option value="☕ 點心超商">☕ 點心超商</option>
+                                <option value="📦 其他雜費">📦 其他雜費</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 mb-1 font-medium">支付方式</label>
+                            <select id="ins-type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700">
+                                <option value="💳 刷卡">💳 刷卡</option>
+                                <option value="💵 現金">💵 現金</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-500 mb-1 font-medium">消費備註（選填）</label>
+                        <input type="text" id="ins-desc" placeholder="例如：敘敘苑午間套餐、Bic Camera 吹風機" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-500 mb-1 font-medium">日圓金額 (JPY ¥)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-2.5 text-slate-400 font-bold">¥</span>
+                            <input type="number" id="ins-amount" placeholder="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-8 pr-3 py-2 text-slate-800 font-bold text-sm">
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 pt-1">
+                        <button onclick="addRecord()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-xl shadow-sm transition active:scale-98">
+                            同步雲端儲存
+                        </button>
+                        <button onclick="downloadCSV()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition text-xs">
+                            匯出 CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <div class="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+                    <h3 class="font-bold text-slate-800 text-xs md:text-sm flex items-center gap-1.5">
+                        <span>📜</span> 消費明細
+                    </h3>
+                </div>
+                <div id="records-box" class="divide-y divide-slate-100 max-h-80 overflow-y-auto"></div>
+            </div>
+        </section>
+
+        <!-- 4. 工具箱分頁 -->
+        <section id="view-tools" class="tab-content space-y-4">
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-1.5">
+                    <span>💱</span> 日圓 ⇄ 台幣即時換算
+                </h3>
+                <div class="grid grid-cols-2 gap-3 items-center">
+                    <div>
+                        <span class="text-[11px] text-slate-500 block mb-1">日圓 (JPY ¥)</span>
+                        <input type="number" id="calc-jpy" value="1000" oninput="convertCurrency('jpy')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-bold text-sm">
+                    </div>
+                    <div>
+                        <span class="text-[11px] text-slate-500 block mb-1">折合台幣 (TWD NT$)</span>
+                        <input type="number" id="calc-twd" value="215" oninput="convertCurrency('twd')" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-800 font-bold text-emerald-600 text-sm">
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl">
+                    <span>換算匯率：1 JPY =</span>
+                    <div class="flex items-center gap-1">
+                        <input type="number" id="custom-rate-input" value="0.215" step="0.001" onchange="updateRate(this.value)" class="w-20 px-2 py-1 bg-white border border-slate-200 rounded text-right font-medium text-slate-700">
+                        <span>TWD</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-800 text-sm mb-1.5 flex items-center gap-1.5">
+                    <span>🏷️</span> 日本退稅與折扣計算 (滿 ¥5,500 含稅免稅)
+                </h3>
+                <p class="text-xs text-slate-500 mb-3">輸入結帳總額（含稅），即刻試算退稅金額與額外折價券省下的費用</p>
+                <div class="flex gap-2">
+                    <input type="number" id="tax-input" placeholder="例如：15000" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs md:text-sm font-semibold">
+                    <button onclick="calculateTaxRefund()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-4 py-2 rounded-xl font-medium transition active:scale-95">試算</button>
+                </div>
+                <div id="tax-result" class="hidden mt-3 p-3 bg-blue-50/70 rounded-xl text-xs space-y-1.5 text-slate-700 border border-blue-100"></div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                <h3 class="font-bold text-slate-800 text-sm mb-3 flex items-center gap-1.5 text-red-700">
+                    <span>🚑</span> 旅遊醫療 & 緊急支援專線
+                </h3>
+                <div class="space-y-2.5 text-xs">
+                    <div class="flex justify-between items-center p-2.5 bg-red-50/70 border border-red-100 rounded-xl">
+                        <div>
+                            <span class="font-bold text-red-800 block">日本警察報案專線</span>
+                            <span class="text-red-600 text-[11px]">交通事故、物品失竊</span>
+                        </div>
+                        <a href="tel:110" class="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs">撥打 110</a>
+                    </div>
+                    <div class="flex justify-between items-center p-2.5 bg-amber-50/70 border border-amber-100 rounded-xl">
+                        <div>
+                            <span class="font-bold text-amber-800 block">日本救護車 / 火警專線</span>
+                            <span class="text-amber-700 text-[11px]">緊急醫療救援、意外受傷</span>
+                        </div>
+                        <a href="tel:119" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs">撥打 119</a>
+                    </div>
+                    <div class="flex justify-between items-center p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div>
+                            <span class="font-bold text-slate-800 block">駐那霸辦事處緊急聯絡電話</span>
+                            <span class="text-slate-500 text-[11px]">急難救助：+81-98-862-3456</span>
+                        </div>
+                        <a href="tel:+81-98-862-3456" class="px-3.5 py-1.5 bg-slate-700 hover:bg-slate-800 text-white rounded-lg font-medium text-xs">撥打</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 底部固定四分頁導覽列 -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 z-40 shadow-lg">
+        <div class="max-w-xl mx-auto flex justify-around items-center h-16">
+            <button onclick="changeTab('schedule', this)" class="nav-tab flex-1 flex flex-col items-center justify-center text-blue-600 font-bold text-[11px] transition">
+                <span class="text-lg">📅</span>
+                <span>行程</span>
+            </button>
+            <button onclick="changeTab('tickets', this)" class="nav-tab flex-1 flex flex-col items-center justify-center text-slate-400 font-medium text-[11px] transition">
+                <span class="text-lg">🎫</span>
+                <span>票券</span>
+            </button>
+            <button onclick="changeTab('ledger', this)" class="nav-tab flex-1 flex flex-col items-center justify-center text-slate-400 font-medium text-[11px] transition">
+                <span class="text-lg">💵</span>
+                <span>記帳</span>
+            </button>
+            <button onclick="changeTab('tools', this)" class="nav-tab flex-1 flex flex-col items-center justify-center text-slate-400 font-medium text-[11px] transition">
+                <span class="text-lg">🧰</span>
+                <span>工具</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 新增景點彈跳視窗 Modal -->
+    <div id="modal-add-spot" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl border border-slate-100 space-y-3">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                <h4 class="font-bold text-slate-800 text-sm">新增臨時行程站點</h4>
+                <button onclick="closeAddSpotModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+            </div>
+            <div class="space-y-2.5 text-xs">
+                <div>
+                    <label class="block text-slate-500 mb-1">所屬天數</label>
+                    <select id="modal-spot-day" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700">
+                        <option value="0">Day 1 (10/08) 那霸抵達與美居入住</option>
+                        <option value="1">Day 2 (10/09) Gulliver租車與AEON來客夢</option>
+                        <option value="2">Day 3 (10/10) PARCO CITY與敘敘苑</option>
+                        <option value="3">Day 4 (10/11) Bic Camera與返台</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-500 mb-1">預定時間 (如 13:30)</label>
+                    <input type="text" id="modal-spot-time" placeholder="14:00" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700">
+                </div>
+                <div>
+                    <label class="block text-slate-500 mb-1">景點 / 餐廳名稱</label>
+                    <input type="text" id="modal-spot-name" placeholder="例如：暖暮拉麵、傑克牛排" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 font-semibold">
+                </div>
+                <div>
+                    <label class="block text-slate-500 mb-1">備註說明</label>
+                    <input type="text" id="modal-spot-memo" placeholder="例如：排隊名店、記得買伴手禮" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeAddSpotModal()" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-600 text-xs font-semibold">取消</button>
+                <button onclick="saveCustomSpot()" class="flex-1 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold">儲存加入</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 自訂提示訊息 Toast -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-slate-800/90 text-white text-xs font-medium px-4 py-2 rounded-full shadow-lg pointer-events-none transition-all duration-300 opacity-0 -translate-y-2 z-50">
+        已成功儲存
+    </div>
+
+    <script>
+        // 資料配置
+        const tripData = {
+            rate: 0.215,
+            days: [
+                {
+                    title: "第 1 天 • 啟程沖繩與美居飯店入住",
+                    spots: [
+                        { time: "18:30", name: "🛫 桃園國際機場第一航廈", memo: "搭乘台灣虎航 IT232 班機前往沖繩", map: "桃園國際機場第一航廈" },
+                        { time: "20:50", name: "🛬 抵達沖繩那霸國際機場", memo: "辦理入境並提取行李，轉乘單軌或計程車前往市區", map: "那霸機場" },
+                        { time: "22:00", name: "🏨 沖繩美居飯店 Check-in", memo: "Mercure Okinawa Naha 辦理入住手續並稍作休息", map: "Mercure Okinawa Naha" }
+                    ]
+                },
+                {
+                    title: "第 2 天 • 租車自駕、祈福與大型商場血拼",
+                    spots: [
+                        { time: "07:00", name: "🍳 飯店早餐", memo: "在美居飯店內享用豐盛早餐補充滿滿活力", map: "" },
+                        { time: "08:30", name: "🚗 Gulliver 租車取車", memo: "前往辦理租車自駕手續，點交車況與檢查 ETC", map: "Gulliver 那霸" },
+                        { time: "09:30", name: "🙏 首里達磨寺", memo: "達磨寺參拜祈福，祈求旅途平安順遂", map: "首里達磨寺" },
+                        { time: "10:00", name: "🛍️ AEON 永旺夢樂城來客夢", memo: "沖繩巨型購物商場，逛街採購服飾、吃美食吹冷氣", map: "AEON MALL Okinawa Rycom" },
+                        { time: "20:00", name: "🏨 返回那霸美居飯店", memo: "開車回飯店放戰利品，準備明日精彩行程", map: "Mercure Okinawa Naha" }
+                    ]
+                },
+                {
+                    title: "第 3 天 • 西海岸海景商場與敘敘苑燒肉",
+                    spots: [
+                        { time: "07:00", name: "🍳 飯店早餐", memo: "享用飯店美味早餐", map: "" },
+                        { time: "10:00", name: "🛍️ 浦添西海岸 PARCO CITY", memo: "面海的高質感超大購物中心，無印良品與各大日系專櫃", map: "PARCO CITY 浦添" },
+                        { time: "12:00", name: "🥩 3F 敘敘苑精品燒肉", memo: "【已預約】一邊欣賞海景一邊品嚐超美味燒肉午間套餐", map: "敘敘苑 沖繩浦添PARCO CITY店" },
+                        { time: "20:00", name: "🏨 返回那霸美居飯店", memo: "回市區放好戰利品，整理回程行李箱", map: "Mercure Okinawa Naha" }
+                    ]
+                },
+                {
+                    title: "第 4 天 • 國際通最後採購與平安返台",
+                    spots: [
+                        { time: "07:00", name: "🍳 飯店早餐", memo: "旅程最後一頓悠閒早餐", map: "" },
+                        { time: "10:00", name: "🛍️ 國際通 Bic Camera", memo: "大肆採購日本熱門藥妝、電器與沖繩在地伴手禮", map: "Bic Camera 沖繩" },
+                        { time: "14:00", name: "🔑 辦理退房", memo: "帶齊所有行李退房，準備前往機場", map: "" },
+                        { time: "15:00", name: "🎒 那霸機場報到", memo: "辦理日航登機與行李託運手續", map: "那霸機場" },
+                        { time: "16:00", name: "🥂 機場貴賓室", memo: "登機前在貴賓室悠閒喝飲料休息片刻", map: "那霸機場 貴賓室" },
+                        { time: "18:05", name: "🛫 搭乘日本航空 JAL NU307", memo: "起飛返回台灣（日本時間 18:05）", map: "" },
+                        { time: "18:40", name: "🛬 抵達桃園國際機場第二航廈", memo: "平安返抵台灣（台灣時間 18:40），結束美好沖繩之旅！", map: "桃園國際機場第二航廈" }
+                    ]
+                }
+            ]
+        };
+
+        const STORAGE_TICKETS_KEY = "okinawa_2026_tickets_data";
+        const STORAGE_CUSTOM_SPOTS_KEY = "okinawa_2026_custom_spots";
+        const STORAGE_RATE_KEY = "okinawa_2026_rate_val";
+
+        let currentDayIdx = 0;
+        let currentRate = parseFloat(localStorage.getItem(STORAGE_RATE_KEY)) || tripData.rate;
+        window.accountBook = [];
+
+        let savedTickets = [];
+        try {
+            const rawT = localStorage.getItem(STORAGE_TICKETS_KEY);
+            savedTickets = rawT ? JSON.parse(rawT) : [
+                { name: "✈️ 台灣虎航 IT232 訂位明細", url: "https://drive.google.com/file/d/1zQA8c3uKTRshk0laeyVq6JEvEdifTNyd/view?usp=sharing" },
+                { name: "🥩 敘敘苑燒肉預約確認 (浦添店)", url: "https://drive.google.com/file/d/1n-cjbAx9wHhJA-jYRViQp7ioZUFTIDTg/view?usp=sharing" },
+                { name: "🏨 沖繩美居飯店 (Mercure Naha) 訂單", url: "https://drive.google.com/file/d/1Mk54TD3xLCpFTOOweLDrF9W14GZ5n-6r/view?usp=sharing" },
+                { name: "🚗 Gulliver 租車預約確認單", url: "https://drive.google.com/file/d/1lrl9YMtrxssKK6zitr7er2eYfPHBJQSp/view?usp=sharing" },
+                { name: "✈️ 10/11 日本航空回程機票", url: "https://drive.google.com/file/d/1DZd1Xgtkr_LEWuAwUI-VS775zKlKmdd9/view?usp=sharing" }
+            ];
+        } catch (e) {
+            savedTickets = [];
+        }
+
+        let customSpots = { 0: [], 1: [], 2: [], 3: [] };
+        try {
+            const rawC = localStorage.getItem(STORAGE_CUSTOM_SPOTS_KEY);
+            if (rawC) customSpots = JSON.parse(rawC);
+        } catch (e) {
+            customSpots = { 0: [], 1: [], 2: [], 3: [] };
+        }
+
+        // 🌟 核心修復：將原本的 window.onload 改寫成全域安全初始化函數
+        window.initOkinawaApp = function() {
+            const tabBox = document.getElementById('day-tabs');
+            if (tabBox) {
+                tabBox.innerHTML = ''; // 清空防重複
+                tripData.days.forEach((day, index) => {
+                    const btn = document.createElement('button');
+                    // 這裡保持您原本 Day 1、Day 2 按鈕的外觀與顏色語法
+                    btn.className = `day-btn px-4 py-2 rounded-full font-bold text-sm border transition ${index === 0 ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200'}`;
+                    btn.innerText = `Day ${index + 1}`;
+                    btn.onclick = function() {
+                        document.querySelectorAll('.day-btn').forEach(b => {
+                            b.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                            b.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+                        });
+                        this.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+                        this.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+                        if (typeof renderDay === 'function') renderDay(index);
+                    };
+                    tabBox.appendChild(btn);
+                });
+            }
+            
+            if (typeof renderDay === 'function') renderDay(0);
+            if (typeof renderTickets === 'function') renderTickets();
+        };
+
+        // 🌟 雙重保險：網頁一打開，立刻大喊執行初始化！
+        window.initOkinawaApp();
+
+        function renderDayTabs() {
+            const tabBox = document.getElementById('day-tabs');
+            tabBox.innerHTML = '';
+
+            tripData.days.forEach((day, index) => {
+                const btn = document.createElement('button');
+                btn.className = `px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+                    index === currentDayIdx 
+                    ? 'bg-blue-600 text-white shadow-sm' 
+                    : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'
+                }`;
+                btn.innerText = `Day ${index + 1} (10/0${index + 8})`;
+                btn.onclick = function() {
+                    currentDayIdx = index;
+                    renderDayTabs();
+                    renderDay(index);
+                };
+                tabBox.appendChild(btn);
+            });
+        }
+
+        function renderDay(idx) {
+            const dayData = tripData.days[idx];
+            document.getElementById('current-day-title').innerText = dayData.title;
+            
+            const userAdded = customSpots[idx] || [];
+            const allSpots = [...dayData.spots, ...userAdded];
+            document.getElementById('spot-count').innerText = `${allSpots.length} 個行程站點`;
+
+            const box = document.getElementById('timeline-box');
+            box.innerHTML = '';
+
+            allSpots.forEach((spot, sIdx) => {
+                const item = document.createElement('div');
+                item.className = 'timeline-step relative flex gap-3 group';
+
+                const mapLink = spot.map 
+                    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(spot.map)}` 
+                    : '';
+
+                item.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="w-8 h-8 rounded-full ${sIdx === 0 ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-100 text-blue-700'} flex items-center justify-center font-bold text-xs z-10">
+                            ${sIdx + 1}
+                        </div>
+                        <div class="timeline-line-stem w-0.5 flex-1 bg-slate-200 my-1"></div>
+                    </div>
+                    <div class="flex-1 pb-4">
+                        <div class="bg-slate-50/80 hover:bg-slate-50 p-3 rounded-xl border border-slate-200/80 transition">
+                            <div class="flex items-center justify-between gap-1 mb-1">
+                                <span class="text-xs font-bold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-md">
+                                    🕒 ${spot.time}
+                                </span>
+                            </div>
+                            <h3 class="text-sm font-bold text-slate-800 mt-1">${spot.name}</h3>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${spot.memo || ''}</p>
+                            ${mapLink ? `
+                                <div class="mt-2.5 pt-2 border-t border-slate-200/60">
+                                    <a href="${mapLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:text-blue-800 font-semibold">
+                                        <span>🗺️ 開啟 Google 地圖導航</span>
+                                    </a>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+                box.appendChild(item);
+            });
+        }
+
+        window.changeTab = function(targetId, btn) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(b => {
+                b.classList.remove('text-blue-600', 'font-bold');
+                b.classList.add('text-slate-400', 'font-medium');
+            });
+
+            document.getElementById(`view-${targetId}`).classList.add('active');
+            btn.classList.remove('text-slate-400', 'font-medium');
+            btn.classList.add('text-blue-600', 'font-bold');
+        };
+
+        function renderTickets() {
+            document.getElementById('ticket-count').innerText = savedTickets.length;
+            const container = document.getElementById('tickets-list');
+            container.innerHTML = '';
+
+            if (savedTickets.length === 0) {
+                container.innerHTML = `<div class="text-center py-5 text-xs text-slate-400">目前尚無已存憑證，可在上方新增</div>`;
+                return;
+            }
+
+            savedTickets.forEach((tk, idx) => {
+                const link = document.createElement('div');
+                link.className = 'flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 transition text-xs group';
+                link.innerHTML = `
+                    <a href="${tk.url}" target="_blank" rel="noopener noreferrer" class="flex-1 font-semibold text-slate-800 group-hover:text-blue-600 flex items-center justify-between pr-2">
+                        <span>${tk.name}</span>
+                        <span class="text-blue-500 text-xs">開啟 ↗</span>
+                    </a>
+                    <button onclick="removeTicket(${idx})" class="text-slate-300 hover:text-red-500 px-2 py-1 transition" title="刪除">
+                        &times;
+                    </button>
+                `;
+                container.appendChild(link);
+            });
+        }
+
+        window.saveTicket = function() {
+            const name = document.getElementById('ticket-name').value.trim();
+            let url = document.getElementById('ticket-url').value.trim();
+
+            if (!name || !url) {
+                showToast("⚠️ 請填寫完整憑證名稱與網址！");
+                return;
+            }
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+            }
+
+            savedTickets.unshift({ name, url });
+            localStorage.setItem(STORAGE_TICKETS_KEY, JSON.stringify(savedTickets));
+            document.getElementById('ticket-name').value = '';
+            document.getElementById('ticket-url').value = '';
+            renderTickets();
+            showToast("✅ 票券憑證已成功儲存！");
+        };
+
+        window.removeTicket = function(idx) {
+            savedTickets.splice(idx, 1);
+            localStorage.setItem(STORAGE_TICKETS_KEY, JSON.stringify(savedTickets));
+            renderTickets();
+            showToast("🗑️ 已移除該憑證");
+        };
+
+        // 雲端記帳互動
+        // 🌟 核心：定義全域天數變數，預設為行程 '1'
+        // 🌟 核心防呆：行程與記帳的初始化天數必須完全對齊！
+        
+        window.currentLedgerDay = '1'; 
+
+        // 🌟 核心：處理上方 Day 1 ~ Day 4 按鈕點擊切換顏色與過濾
+        window.setLedgerDay = function(dayStr, btnElement) {
+            window.currentLedgerDay = dayStr;
+            document.querySelectorAll('.ledger-day-btn').forEach(b => {
+                b.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+                b.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+            });
+            btnElement.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+            btnElement.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+            
+            // 同步修改下方明細標題的文字提示
+            const viewTitle = dayStr === 'all' ? '全部' : `Day ${dayStr}`;
+            const labelEl = document.getElementById('current-viewing-day-label');
+            if (labelEl) labelEl.innerText = viewTitle;
+            
+            window.renderLedger(); // 切換天數按鈕時，立刻重新篩選明細
+        };
+
+        window.addRecord = function() {
+            // 貼心防呆：如果目前選在「全行程」，不給存入，必須先選天數
+            if(window.currentLedgerDay === 'all') { 
+                alert("⚠️ 請先在上方點選目前是第幾天 (Day 1~4) 再點擊儲存唷！"); 
+                return; 
+            }
+
+            const category = document.getElementById('ins-category').value;
+            const type = document.getElementById('ins-type').value;
+            const desc = document.getElementById('ins-desc').value.trim() || '日常花費';
+            const amount = parseFloat(document.getElementById('ins-amount').value);
+            
+            if(isNaN(amount) || amount <= 0) {
+                showToast("⚠️ 請輸入正確的日圓金額！");
+                return;
+            }
+
+            const twd = Math.round(amount * currentRate);
+            const now = new Date();
+            const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            // 🌟 關鍵優化：將當前選取的天數 (window.currentLedgerDay) 一併發射送到 Firebase 雲端
+            const item = { day: window.currentLedgerDay, category, type, desc, amount, twd, timeStr };
+
+            if (typeof window.dbPush === 'function' && window.dbDatabase) {
+                window.dbPush(window.dbRef(window.dbDatabase, 'okinawa_ledger'), item);
+                showToast(`🚀 支出已成功發射同步至 Day ${window.currentLedgerDay} 雲端！`);
+            } else {
+                showToast("❌ 雲端連線中，請稍候再試...");
+            }
+
+            document.getElementById('ins-amount').value = '';
+            document.getElementById('ins-desc').value = '';
+        };
+
+        window.deleteRecord = function(id) {
+            if (window.dbDatabase && window.dbRemove) {
+                window.dbRemove(window.dbRef(window.dbDatabase, `okinawa_ledger/${id}`));
+                showToast("🗑️ 已從雲端刪除該筆紀錄");
+            }
+        };
+
+        window.renderLedger = function() {
+            const box = document.getElementById('records-box');
+            if (!box) return;
+            box.innerHTML = '';
+
+            let cashSum = 0;
+            let cardSum = 0;
+            let allForeign = 0;
+            let allTwd = 0;
+
+            if (!window.accountBook || window.accountBook.length === 0) {
+                box.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">目前尚無任何消費記錄，點擊上方儲存第一筆吧！</div>`;
+            } else {
+             // 🌟 分天記帳過濾核心：如果當前不是選「全行程」，且這筆消費的天數不符，就跳過不加總不顯示
+                if (window.currentLedgerDay !== 'all' && item.day !== window.currentLedgerDay) {
+                    return;
+                }
+                if (item.type && item.type.includes('現金')) {
+                        cashSum += item.amount;
+                    } else {
+                        cardSum += item.amount;
+                    }
+                    allForeign += item.amount;
+                    allTwd += item.twd;
+
+                    const row = document.createElement('div');
+                    row.className = 'py-2.5 flex items-center justify-between text-xs hover:bg-slate-50 px-1 rounded-lg transition';
+                    row.innerHTML = `
+                        <div class="space-y-0.5">
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-bold text-slate-800">${item.desc || item.category}</span>
+                                <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">${item.category}</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400">
+                                <span>${item.timeStr || ''}</span> • <span>${item.type}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="text-right">
+                                <div class="font-bold text-slate-800 text-sm">¥${(item.amount || 0).toLocaleString()}</div>
+                                <div class="text-[10px] text-slate-400">≈ NT$ ${(item.twd || 0).toLocaleString()}</div>
+                            </div>
+                            <button onclick="deleteRecord('${item.id}')" class="text-slate-300 hover:text-red-500 text-sm p-1 transition" title="刪除">
+                                &times;
+                            </button>
+                        </div>
+                    `;
+                    box.appendChild(row);
+                });
+            }
+
+            document.getElementById('sum-cash').innerText = `¥${cashSum.toLocaleString()}`;
+            document.getElementById('sum-card').innerText = `¥${cardSum.toLocaleString()}`;
+            document.getElementById('sum-all-foreign').innerText = allForeign.toLocaleString();
+            document.getElementById('sum-all-twd').innerText = allTwd.toLocaleString();
+        };
+
+        window.downloadCSV = function() {
+            if (!window.accountBook || window.accountBook.length === 0) {
+                showToast("⚠️ 目前沒有消費明細可以導出唷！");
+                return;
+            }
+            let csv = "\uFEFF時間,類別,說明,支付方式,日圓金額(JPY),折合台幣(TWD)\n";
+            window.accountBook.forEach(i => {
+                csv += `"${i.timeStr || ''}","${i.category}","${i.desc || ''}","${i.type}",${i.amount},${i.twd}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `沖繩旅費記帳本_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast("📥 記帳明細 CSV 已成功下載！");
+        };
+
+        window.convertCurrency = function(from) {
+            const jpyInput = document.getElementById('calc-jpy');
+            const twdInput = document.getElementById('calc-twd');
+
+            if (from === 'jpy') {
+                const jpy = parseFloat(jpyInput.value) || 0;
+                twdInput.value = Math.round(jpy * currentRate);
+            } else {
+                const twd = parseFloat(twdInput.value) || 0;
+                jpyInput.value = currentRate > 0 ? Math.round(twd / currentRate) : 0;
+            }
+        };
+
+        window.updateRate = function(val) {
+            const newRate = parseFloat(val);
+            if (!isNaN(newRate) && newRate > 0) {
+                currentRate = newRate;
+                localStorage.setItem(STORAGE_RATE_KEY, newRate);
+                document.getElementById('meta-rate-display').innerText = newRate;
+                if (typeof window.renderLedger === 'function') window.renderLedger();
+                convertCurrency('jpy');
+                showToast(`匯率已更新為 1 JPY = ${newRate} TWD`);
+            }
+        };
+
+        window.calculateTaxRefund = function() {
+            const input = parseFloat(document.getElementById('tax-input').value);
+            const resBox = document.getElementById('tax-result');
+
+            if (isNaN(input) || input <= 0) {
+                showToast("⚠️ 請輸入含稅購買總金額！");
+                return;
+            }
+
+            resBox.classList.remove('hidden');
+            const taxExcluded = Math.round(input / 1.1);
+            const taxSaved = input - taxExcluded;
+            const isEligible = taxExcluded >= 5000;
+
+            let html = `
+                <div class="flex justify-between"><span>含稅消費金額：</span><strong>¥${input.toLocaleString()}</strong></div>
+                <div class="flex justify-between"><span>未稅本體價格：</span><strong>¥${taxExcluded.toLocaleString()}</strong></div>
+                <div class="flex justify-between text-emerald-700 font-bold"><span>10% 免稅現省：</span><span>- ¥${taxSaved.toLocaleString()} (約 NT$ ${Math.round(taxSaved * currentRate)})</span></div>
+            `;
+
+            if (isEligible) {
+                html += `<div class="text-emerald-600 font-semibold pt-1 border-t border-blue-200">🎉 已達日本免稅門檻 (未稅滿 ¥5,000)！結帳出示護照即可免稅。</div>`;
+                if (input >= 10000) {
+                    const extraCoupon = Math.round(taxExcluded * 0.05);
+                    html += `<div class="text-blue-700 text-[11px]">🎁 Bic Camera / 唐吉訶德滿額優惠券：再折 5% 約 ¥${extraCoupon.toLocaleString()}</div>`;
+                }
+            } else {
+                const diff = 5000 - taxExcluded;
+                html += `<div class="text-amber-600 font-semibold pt-1 border-t border-blue-200">⚠️ 尚差 ¥${diff.toLocaleString()} (未稅) 方可享有免稅資格。</div>`;
+            }
+
+            resBox.innerHTML = html;
+        };
+
+        window.openAddSpotModal = function() {
+            document.getElementById('modal-spot-day').value = currentDayIdx;
+            document.getElementById('modal-add-spot').classList.remove('hidden');
+            document.getElementById('modal-add-spot').classList.add('flex');
+        };
+
+        window.closeAddSpotModal = function() {
+            document.getElementById('modal-add-spot').classList.add('hidden');
+            document.getElementById('modal-add-spot').classList.remove('flex');
+        };
+
+        window.saveCustomSpot = function() {
+            const dayIdx = parseInt(document.getElementById('modal-spot-day').value, 10);
+            const time = document.getElementById('modal-spot-time').value.trim() || '任意時間';
+            const name = document.getElementById('modal-spot-name').value.trim();
+            const memo = document.getElementById('modal-spot-memo').value.trim();
+
+            if (!name) {
+                showToast("⚠️ 請填寫景點或餐廳名稱！");
+                return;
+            }
+
+            if (!customSpots[dayIdx]) {
+                customSpots[dayIdx] = [];
+            }
+
+            customSpots[dayIdx].push({
+                time: time,
+                name: name,
+                memo: memo,
+                map: name
+            });
+
+            localStorage.setItem(STORAGE_CUSTOM_SPOTS_KEY, JSON.stringify(customSpots));
+            closeAddSpotModal();
+            renderDay(currentDayIdx);
+            showToast("✨ 新站點已成功加入時間軸！");
+
+            document.getElementById('modal-spot-name').value = '';
+            document.getElementById('modal-spot-memo').value = '';
+        };
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.remove('opacity-0', '-translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-2');
+            }, 2300);
+        }
+    </script>
+</body>
+</html>
