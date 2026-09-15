@@ -35,7 +35,7 @@
           list.unshift({ id: key, ...data[key] });
         });
       }
-      accountBook = list; // 👈 存入打通後的全域抽屜
+      window.accountBook = list; // 👈 存入打通後的全域抽屜
       if (typeof renderLedger === 'function') {
         renderLedger(); // 👈 立刻逼畫面重新畫出來
       }
@@ -539,6 +539,10 @@
 
         // 記帳紀錄
         accountBook = [];
+        // 📡 背景神偷同步器：每 0.1 秒自動把頂部共享箱子的最新雲端資料偷下來同步給底部，保證重整不漏接、兩邊秒同步！
+setInterval(() => {
+  if (window.accountBook) accountBook = window.accountBook;
+}, 100);
         try {
             const rawA = localStorage.getItem(STORAGE_EXPENSES_KEY);
             accountBook = rawA ? JSON.parse(rawA) : [
