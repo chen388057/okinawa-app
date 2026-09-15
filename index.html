@@ -774,12 +774,12 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
         }
 
         function saveLedger() {
-            try {
-                localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(accountBook));
-            } catch (e) {
-                console.error(e);
-            }
-        }
+  try {
+    localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(window.accountBook || accountBook));
+  } catch (e) {
+    console.error(e);
+  }
+}
 
         function renderLedger() {
             const box = document.getElementById('records-box');
