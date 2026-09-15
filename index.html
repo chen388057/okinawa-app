@@ -722,22 +722,25 @@
             const now = new Date();
             const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             
-            const item = { category, type, desc, amount, twd, time: timeStr };
-
-            accountBook.unshift(item); saveLedger(); renderLedger();
-try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(window.dbDatabase, 'okinawa_ledger'), item); } } catch(e) { console.log(e); }
-
+            const recordId = Date.now().toString();
+const item = { id: recordId, category, type, desc, amount, twd, time: timeStr };
+accountBook.unshift(item); saveLedger(); renderLedger();
+try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(window.dbDatabase, 'okinawa_ledger/' + recordId), item); } } catch(e) { console.log(e); }
             // 清空輸入框
             document.getElementById('ins-amount').value = '';
             document.getElementById('ins-desc').value = '';
             showToast("🚀 支出已成功發射同步至雲端！");
         }
         
-        function deleteRecord(id) {
-            accountBook = accountBook.filter(item => item.id !== id);
-            saveLedger();
-            renderLedger();
-            showToast("🗑️ 已移除該筆紀錄");
+        function function deleteRecord(id) {
+  accountBook = accountBook.filter(item => item.id !== id.toString());
+  saveLedger();
+  renderLedger();
+  showToast("🗑 正在同步雲端刪除...");
+  import("https://gstatic.com").then((mod) => {
+    mod.remove(mod.ref(window.dbDatabase, 'okinawa_ledger/' + id)).catch(e => console.log(e));
+  });
+}
         }
 
         function clearAllExpenses() {
@@ -797,7 +800,7 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
                                 <div class="font-bold text-slate-800 text-sm">¥${item.amount.toLocaleString()}</div>
                                 <div class="text-[10px] text-slate-400">≈ NT$ ${item.twd.toLocaleString()}</div>
                             </div>
-                            <button onclick="deleteRecord(${item.id})" class="text-slate-300 hover:text-red-500 text-sm p-1 transition" title="刪除">
+                            <button onclick="deleteRecord('${ item. id}')" class="text-slate-300 hover:text-red-500 text-sm p-1 transition" title="刪除">
                                 &times;
                             </button>
                         </div>
