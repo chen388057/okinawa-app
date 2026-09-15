@@ -1,0 +1,111 @@
+/* 沖繩隨身助手｜日雜旅行手帳風配色 */
+
+:root {
+  --japan-cream: #F7F3EA;
+  --japan-white: #FFFDF8;
+  --japan-sage: #8F9B7A;
+  --japan-sage-light: #E8EDE1;
+  --japan-brown: #B5A28D;
+  --japan-brown-light: #EEE7DD;
+  --japan-charcoal: #4F5147;
+  --japan-orange: #C98262;
+  --japan-orange-light: #F3E2D9;
+  --japan-line: #E5DED2;
+}
+
+body {
+  background-color: var(--japan-cream) !important;
+  color: var(--japan-charcoal) !important;
+  accent-color: var(--japan-sage);
+}
+
+header {
+  background: linear-gradient(
+    135deg,
+    #7F8D6C 0%,
+    #9BA58A 55%,
+    #B5A28D 100%
+  ) !important;
+}
+
+.bg-white {
+  background-color: var(--japan-white) !important;
+}
+
+.border-slate-100,
+.border-slate-200 {
+  border-color: var(--japan-line) !important;
+}
+
+.bg-slate-50 {
+  background-color: #F3EFE6 !important;
+}
+
+.bg-slate-100 {
+  background-color: #EDE8DE !important;
+}
+
+.text-slate-800,
+.text-slate-900 {
+  color: var(--japan-charcoal) !important;
+}
+
+.text-slate-600,
+.text-slate-700 {
+  color: #68685F !important;
+}
+
+.text-slate-500,
+.text-slate-400 {
+  color: #918B81 !important;
+}
+
+.bg-blue-600,
+.bg-blue-700,
+.hover\:bg-blue-700:hover {
+  background-color: var(--japan-sage) !important;
+}
+
+.text-blue-600,
+.text-blue-700,
+.text-blue-800,
+.text-blue-900 {
+  color: #68765A !important;
+}
+
+.bg-blue-50,
+.bg-blue-50\/80 {
+  background-color: var(--japan-sage-light) !important;
+}
+
+.border-blue-100 {
+  border-color: #D4DDC8 !important;
+}
+
+.bg-sky-600,
+.bg-indigo-600 {
+  background-color: var(--japan-sage) !important;
+}
+
+.focus\:ring-blue-500:focus {
+  --tw-ring-color: #AAB69A !important;
+}
+
+.timeline-container::before {
+  background: #D8D2C7 !important;
+}
+
+.text-amber-300,
+.text-orange-600 {
+  color: var(--japan-orange) !important;
+}
+
+.bg-orange-50 {
+  background-color: var(--japan-orange-light) !important;
+}
+
+.bg-slate-900,
+.bg-slate-800,
+.bg-blue-950 {
+  background-color: #55574E !important;
+}
