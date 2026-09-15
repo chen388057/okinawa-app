@@ -561,13 +561,18 @@
         window.onload = function() {
     document.getElementById('meta-rate-display').innerText = currentRate;
     document.getElementById('custom-rate-input').value = currentRate;
+
+    // 先顯示行程，避免記帳 Firebase 影響行程載入
     renderDayTabs();
     renderDay(0);
     renderTickets();
     renderLedger();
     convertCurrency('jpy');
-    loadLedgerFromFirebase();
-            
+
+    // Firebase 記帳獨立載入，失敗也不影響行程
+    if (typeof window.dbOnValue === 'function' && window.ledgerRef) {
+        loadLedgerFromFirebase();
+    }
 };
 
         async function deleteRecord(id) {
@@ -727,7 +732,53 @@
             renderTickets();
             showToast("🗑️ 已移除該憑證");
         }
+function loadLedgerFromFirebase() {
+    // Firebase 尚未準備好時，不阻擋整個行程頁面
+    if (
+        typeof window.dbOnValue !== 'function' ||
+        !window.ledgerRef
+    ) {
+        console.warn('Firebase 記帳尚未準備完成');
+        return;
+    }
 
+    window.dbOnValue(
+        window.ledgerRef,
+        (snapshot) => {
+            const data = snapshot.val();
+
+            if (!data) {
+                accountBook = [];
+            } else {
+                accountBook = Object.entries(data)
+                    .map(([id, item]) => ({
+                        id: id,
+                        ...item,
+                        amount: Number(item.amount) || 0,
+                        twd: Number(item.twd) || 0
+                    }))
+                    .sort(
+                        (a, b) =>
+                            (Number(b.createdAt) || 0) -
+                            (Number(a.createdAt) || 0)
+                    );
+            }
+
+            // 保留本機備份
+            saveLedger();
+
+            // 更新記帳畫面
+            renderLedger();
+        },
+        (error) => {
+            console.error('Firebase 讀取記帳失敗：', error);
+
+            // Firebase 失敗也不要影響行程
+            renderLedger();
+        }
+    );
+}
+        
 // ==================== 記帳本功能 ====================
 
 async function addRecord() {
@@ -1028,59 +1079,7 @@ function renderLedger() {
   document.getElementById('sum-all-twd').innerText =
     `NT$ ${allTwd.toLocaleString()}`;
 }
-        function renderLedger() {
-            const box = document.getElementById('records-box');
-            box.innerHTML = '';
-
-            let cashSum = 0;
-            let cardSum = 0;
-            let allForeign = 0;
-            let allTwd = 0;
-
-            if (accountBook.length === 0) {
-                box.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">目前尚無任何消費記錄，點擊上方儲存第一筆吧！</div>`;
-            } else {
-                accountBook.forEach(item => {
-                    if (item.type.includes('現金')) {
-                        cashSum += item.amount;
-                    } else {
-                        cardSum += item.amount;
-                    }
-                    allForeign += item.amount;
-                    allTwd += item.twd;
-
-                    const row = document.createElement('div');
-                    row.className = 'py-2.5 flex items-center justify-between text-xs hover:bg-slate-50 px-1 rounded-lg transition';
-                    row.innerHTML = `
-                        <div class="space-y-0.5">
-                            <div class="flex items-center gap-1.5">
-                                <span class="font-bold text-slate-800">${item.desc || item.category}</span>
-                                <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">${item.category}</span>
-                            </div>
-                            <div class="text-[10px] text-slate-400">
-                                <span>${item.time}</span> • <span>${item.type}</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2.5">
-                            <div class="text-right">
-                                <div class="font-bold text-slate-800 text-sm">¥${item.amount.toLocaleString()}</div>
-                                <div class="text-[10px] text-slate-400">≈ NT$ ${item.twd.toLocaleString()}</div>
-                            </div>
-                            <button onclick="deleteRecord(${item.id})" class="text-slate-300 hover:text-red-500 text-sm p-1 transition" title="刪除">
-                                &times;
-                            </button>
-                        </div>
-                    `;
-                    box.appendChild(row);
-                });
-            }
-
-            document.getElementById('sum-cash').innerText = `¥${cashSum.toLocaleString()}`;
-            document.getElementById('sum-card').innerText = `¥${cardSum.toLocaleString()}`;
-            document.getElementById('sum-all-foreign').innerText = allForeign.toLocaleString();
-            document.getElementById('sum-all-twd').innerText = allTwd.toLocaleString();
-        }
-
+        
         // 匯出 CSV
         function downloadCSV() {
             if (accountBook.length === 0) {
