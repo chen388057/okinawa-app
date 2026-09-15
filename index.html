@@ -572,7 +572,10 @@ setInterval(() => {
             renderDayTabs();
             renderDay(0);
             renderTickets();
-            renderLedger();
+            // 🛑 開機保護防線：如果雲端資料還在路上，先不搶跑，等 0.4 秒大腦上線後再執行，保證重整絕不洗空！
+  setTimeout(() => {
+    renderLedger();
+  }, 400);
             convertCurrency('jpy');
         };
 
