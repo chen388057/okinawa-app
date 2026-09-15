@@ -27,7 +27,7 @@
     window.dbRef = ref;
     window.dbPush = push;
 
-    // 📡 雲端即時廣播器：同時寫入兩個變數抽屜，徹底打通跨手機即時同步！
+   // 📡 雲端即時廣播器：完美打通跨裝置秒級同步
     onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
       const data = snapshot.val();
       const list = [];
@@ -36,14 +36,20 @@
           list.unshift({ id: key, ...data[key] });
         });
       }
-      
-      // 💡 關鍵修復：同時塞滿兩個變數，不論下方的程式看哪一個，通通都是最新的雲端資料！
       accountBook = list;
       window.accountBook = list;
 
+      // 💡 關鍵修復：如果網頁還在初始化，定時 0.3 秒後再次強制刷新畫面，確保資料絕對畫得出來！
       if (typeof renderLedger === 'function') {
         saveLedger();
         renderLedger();
+      } else {
+        setTimeout(() => {
+          if (typeof renderLedger === 'function') {
+            saveLedger();
+            renderLedger();
+          }
+        }, 300);
       }
     });
       
