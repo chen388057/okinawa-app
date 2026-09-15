@@ -32,7 +32,8 @@
   const db = getDatabase(app);
   const ledgerRef = ref(db, "okinawa_ledger");
   const customSpotsRef = ref(db, "okinawa_custom_spots");
-
+  const ticketsRef = ref(db, "okinawa_tickets");
+        
   window.dbDatabase = db;
   window.dbRef = ref;
   window.dbPush = push;
@@ -40,6 +41,7 @@
   window.dbRemove = remove;
   window.ledgerRef = ledgerRef;
   window.customSpotsRef = customSpotsRef;
+  window.ticketsRef = ticketsRef;
 
   // 通知普通 script：Firebase 已初始化完成
   window.dispatchEvent(new Event('firebase-ready'));
@@ -572,9 +574,13 @@
     if (typeof window.dbOnValue === 'function' && window.ledgerRef) {
         loadLedgerFromFirebase();
     }
-if (typeof window.dbOnValue === 'function' && window.customSpotsRef) {
+    if (typeof window.dbOnValue === 'function' && window.ticketsRef) {
+        loadTicketsFromFirebase();
+    }
+            
+    if (typeof window.dbOnValue === 'function' && window.customSpotsRef) {
     loadCustomSpotsFromFirebase();
-}
+    }
         };
 
         
@@ -693,33 +699,119 @@ if (typeof window.dbOnValue === 'function' && window.customSpotsRef) {
             });
         }
 
-        function saveTicket() {
-            const name = document.getElementById('ticket-name').value.trim();
-            let url = document.getElementById('ticket-url').value.trim();
+        async function saveTicket() {
+    const name = document.getElementById('ticket-name').value.trim();
+    let url = document.getElementById('ticket-url').value.trim();
 
-            if (!name || !url) {
-                showToast("⚠️ 請填寫完整憑證名稱與網址！");
-                return;
-            }
-            if (!url.startsWith('http://') && !url.startsWith('https://')) {
-                url = 'https://' + url;
-            }
+    if (!name || !url) {
+        showToast("⚠️ 請填寫完整憑證名稱與網址！");
+        return;
+    }
 
-            savedTickets.unshift({ name, url });
-            localStorage.setItem(STORAGE_TICKETS_KEY, JSON.stringify(savedTickets));
-            document.getElementById('ticket-name').value = '';
-            document.getElementById('ticket-url').value = '';
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+    }
+
+    const newTicket = {
+        name: name,
+        url: url,
+        createdAt: Date.now()
+    };
+
+    if (typeof window.dbPush !== 'function' || !window.ticketsRef) {
+        showToast("⏳ 雲端同步連線中，請稍候重試...");
+        return;
+    }
+
+    try {
+        await window.dbPush(window.ticketsRef, newTicket);
+
+        document.getElementById('ticket-name').value = '';
+        document.getElementById('ticket-url').value = '';
+
+        showToast("☁️ 票券已同步到雲端！");
+    } catch (error) {
+        console.error("Firebase 票券儲存失敗：", error);
+        showToast("❌ 票券儲存失敗，請稍後再試");
+    }
+}
+
+        async function removeTicket(idx) {
+    const ticket = savedTickets[idx];
+
+    if (!ticket || !ticket.id) {
+        showToast("❌ 找不到票券資料");
+        return;
+    }
+
+    try {
+        await window.dbRemove(
+            window.dbRef(
+                window.dbDatabase,
+                `okinawa_tickets/${ticket.id}`
+            )
+        );
+
+        showToast("🗑️ 已移除該憑證");
+    } catch (error) {
+        console.error("Firebase 刪除票券失敗：", error);
+        showToast("❌ 刪除失敗，請稍後再試");
+    }
+}
+function loadTicketsFromFirebase() {
+    if (typeof window.dbOnValue !== 'function' || !window.ticketsRef) {
+        return;
+    }
+
+    window.dbOnValue(window.ticketsRef, async (snapshot) => {
+        const data = snapshot.val();
+
+        // Firebase 已經有票券 → 同步到目前裝置
+        if (data) {
+            savedTickets = Object.entries(data)
+                .map(([id, item]) => ({
+                    id: id,
+                    ...item
+                }))
+                .sort((a, b) =>
+                    (b.createdAt || 0) - (a.createdAt || 0)
+                );
+
+            localStorage.setItem(
+                STORAGE_TICKETS_KEY,
+                JSON.stringify(savedTickets)
+            );
+
             renderTickets();
-            showToast("✅ 票券憑證已成功儲存！");
+            return;
         }
 
-        function removeTicket(idx) {
-            savedTickets.splice(idx, 1);
-            localStorage.setItem(STORAGE_TICKETS_KEY, JSON.stringify(savedTickets));
-            renderTickets();
-            showToast("🗑️ 已移除該憑證");
+        // Firebase 還沒有資料
+        // → 把原本這台裝置的票券搬上雲端
+        if (savedTickets.length > 0) {
+            for (const ticket of savedTickets) {
+                await window.dbPush(
+                    window.ticketsRef,
+                    {
+                        name: ticket.name,
+                        url: ticket.url,
+                        createdAt: ticket.createdAt || Date.now()
+                    }
+                );
+            }
+
+            showToast("☁️ 原有票券已同步到雲端！");
         }
-function loadLedgerFromFirebase() {
+
+        renderTickets();
+
+    }, (error) => {
+        console.error("Firebase 讀取票券失敗：", error);
+        renderTickets();
+    });
+}
+        
+        function loadLedgerFromFirebase() {
     // Firebase 尚未準備好時，不阻擋整個行程頁面
     if (
         typeof window.dbOnValue !== 'function' ||
