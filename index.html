@@ -575,22 +575,7 @@
     }
 };
 
-        async function deleteRecord(id) {
-  try {
-    const recordRef = window.dbRef(
-      window.dbDatabase,
-      `okinawa_ledger/${id}`
-    );
-
-    await window.dbRemove(recordRef);
-
-    showToast("🗑️ 已刪除這筆紀錄");
-
-  } catch (error) {
-    console.error("Firebase 刪除失敗：", error);
-    showToast("❌ 刪除失敗，請稍後再試");
-  }
-}
+        
         
         // 渲染天數按鈕
         function renderDayTabs() {
