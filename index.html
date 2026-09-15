@@ -556,7 +556,7 @@
         }
 
         // 記帳紀錄
-        let accountBook = [];
+        accountBook = [];
         try {
             const rawA = localStorage.getItem(STORAGE_EXPENSES_KEY);
             accountBook = rawA ? JSON.parse(rawA) : [
