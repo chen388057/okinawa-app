@@ -733,7 +733,10 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
         }
         
        function deleteRecord(id) {
-  accountBook = accountBook.filter(item => item.id !== id.toString());
+  accountBook = accountBook.filter(item => {
+    if (!item || !item.id) return false;
+    return item.id.toString() !== id.toString();
+  });
   saveLedger();
   renderLedger();
   showToast("🗑 正在同步雲端刪除...");
