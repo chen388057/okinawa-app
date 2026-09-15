@@ -746,63 +746,63 @@
         };
 
         window.renderLedger = function() {
-            const box = document.getElementById('records-box');
-            if (!box) return;
-            box.innerHTML = '';
+    const box = document.getElementById('records-box');
+    if (!box) return;
+    box.innerHTML = '';
+    let cashSum = 0;
+    let cardSum = 0;
+    let allForeign = 0;
+    let allTwd = 0;
 
-            let cashSum = 0;
-            let cardSum = 0;
-            let allForeign = 0;
-            let allTwd = 0;
-
-            if (!window.accountBook || window.accountBook.length === 0) {
-                box.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">目前尚無任何消費記錄，點擊上方儲存第一筆吧！</div>`;
-            } else {
-             // 🌟 分天記帳過濾核心：如果當前不是選「全行程」，且這筆消費的天數不符，就跳過不加總不顯示
-               // 🌟 1. 把過濾防線放進大括號裡面
-              if (window.currentLedgerDay !== 'all' && item.day !== window.currentLedgerDay) {
-              return;
-                }
-                if (item.type && item.type.includes('現金')) {
-                        cashSum += item.amount;
-                    } else {
-                        cardSum += item.amount;
-                    }
-                    allForeign += item.amount;
-                    allTwd += item.twd;
-
-                    const row = document.createElement('div');
-                    row.className = 'py-2.5 flex items-center justify-between text-xs hover:bg-slate-50 px-1 rounded-lg transition';
-                    row.innerHTML = `
-                        <div class="space-y-0.5">
-                            <div class="flex items-center gap-1.5">
-                                <span class="font-bold text-slate-800">${item.desc || item.category}</span>
-                                <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">${item.category}</span>
-                            </div>
-                            <div class="text-[10px] text-slate-400">
-                                <span>${item.timeStr || ''}</span> • <span>${item.type}</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2.5">
-                            <div class="text-right">
-                                <div class="font-bold text-slate-800 text-sm">¥${(item.amount || 0).toLocaleString()}</div>
-                                <div class="text-[10px] text-slate-400">≈ NT$ ${(item.twd || 0).toLocaleString()}</div>
-                            </div>
-                            <button onclick="deleteRecord('${item.id}')" class="text-slate-300 hover:text-red-500 text-sm p-1 transition" title="刪除">
-                                &times;
-                            </button>
-                        </div>
-                    `;
-                    box.appendChild(row);
-                });
+    if (!window.accountBook || window.accountBook.length === 0) {
+        box.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">目前尚無任何消費記錄，點擊上方儲存第一筆吧！</div>`;
+    } else {
+        // 🌟 1. 修正大括號與迴圈順序，讓過濾防線完美收納在 forEach 裡面！
+        window.accountBook.forEach(item => {
+            if (window.currentLedgerDay !== 'all' && item.day !== window.currentLedgerDay) {
+                return;
             }
 
-            document.getElementById('sum-cash').innerText = `¥${cashSum.toLocaleString()}`;
-            document.getElementById('sum-card').innerText = `¥${cardSum.toLocaleString()}`;
-            document.getElementById('sum-all-foreign').innerText = allForeign.toLocaleString();
-            document.getElementById('sum-all-twd').innerText = allTwd.toLocaleString();
-        };
-});
+            if (item.type && item.type.includes('現金')) {
+                cashSum += item.amount;
+            } else {
+                cardSum += item.amount;
+            }
+            allForeign += item.amount;
+            allTwd += item.twd;
+
+            const row = document.createElement('div');
+            row.className = 'py-2.5 flex items-center justify-between text-xs hover:bg-slate-50 px-1 rounded-lg transition';
+            row.innerHTML = `
+                <div class="space-y-0.5">
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-slate-800">${item.desc || item.category}</span>
+                        <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">${item.category}</span>
+                    </div>
+                    <div class="text-[10px] text-slate-400">
+                        <span>${item.timeStr || ''}</span> • <span>${item.type}</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="text-right">
+                        <div class="font-bold text-slate-800 text-sm">¥${(item.amount || 0).toLocaleString()}</div>
+                        <div class="text-[10px] text-slate-400">≈ NT$ ${(item.twd || 0).toLocaleString()}</div>
+                    </div>
+                    <button onclick="deleteRecord('${item.id}')" class="text-slate-300 hover:text-red-500 text-sm p-1 transition" title="刪除">
+                        &times;
+                    </button>
+                </div>
+            `;
+            box.appendChild(row);
+        }); // 🌟 2. 在這裡將資料載入的迴圈完美收尾
+    }
+
+    document.getElementById('sum-cash').innerText = `¥${cashSum.toLocaleString()}`;
+    document.getElementById('sum-card').innerText = `¥${cardSum.toLocaleString()}`;
+    document.getElementById('sum-all-foreign').innerText = allForeign.toLocaleString();
+    document.getElementById('sum-all-twd').innerText = allTwd.toLocaleString();
+}; // 🌟 3. 將整個 renderLedger 功能完美封口，不再有多餘括號跑去下方打架！
+        
         window.downloadCSV = function() {
             if (!window.accountBook || window.accountBook.length === 0) {
                 showToast("⚠️ 目前沒有消費明細可以導出唷！");
