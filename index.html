@@ -781,7 +781,7 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
 
         function saveLedger() {
   try {
-    localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(window.accountBook || accountBook));
+    localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(window.accountBook || accountBook || []));
   } catch (e) {
     console.error(e);
   }
