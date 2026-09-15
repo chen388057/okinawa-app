@@ -567,25 +567,26 @@
     renderLedger();
     convertCurrency('jpy');
     loadLedgerFromFirebase();
-            async function deleteRecord(id) {
-    if (!window.dbRemove || !window.dbDatabase || !window.dbRef) {
-        showToast("❌ 雲端連線尚未就緒");
-        return;
-    }
-
-    try {
-        await window.dbRemove(
-            window.dbRef(window.dbDatabase, `okinawa_ledger/${id}`)
-        );
-
-        showToast("🗑️ 已移除該筆紀錄");
-    } catch (error) {
-        console.error("刪除失敗：", error);
-        showToast("❌ 刪除失敗");
-    }
-}
+            
 };
 
+        async function deleteRecord(id) {
+  try {
+    const recordRef = window.dbRef(
+      window.dbDatabase,
+      `okinawa_ledger/${id}`
+    );
+
+    await window.dbRemove(recordRef);
+
+    showToast("🗑️ 已刪除這筆紀錄");
+
+  } catch (error) {
+    console.error("Firebase 刪除失敗：", error);
+    showToast("❌ 刪除失敗，請稍後再試");
+  }
+}
+        
         // 渲染天數按鈕
         function renderDayTabs() {
             const tabBox = document.getElementById('day-tabs');
