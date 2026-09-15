@@ -6,56 +6,26 @@
     <title>202610 沖繩自駕自由行 - 隨身助手</title>
     
     <!-- 引入 Firebase SDK (多人連線即時記帳必備) -->
-    <!-- 引入 Firebase SDK (多人連線即時記帳必備) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  import { getDatabase, ref, push, onValue } from "https://gstatic.com/firebasejs/12.19.0/firebase-database.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDytE1VeJcAHxk8-qiG5MQM1KRcUDSMW8s",
-      authDomain: "okinawa-defcf.firebaseapp.com",
-      databaseURL: "https://okinawa-defcf-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "okinawa-defcf",
-      storageBucket: "okinawa-defcf.firebasestorage.app",
-      messagingSenderId: "447498921943",
-      appId: "1:447498921943:web:f1c23237db851a3ec74d92"
-    };
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDytE1VeJcAHxk8-qiG5MQM1KRcUDSMW8s",
+    authDomain: "okinawa-defcf.firebaseapp.com",
+    databaseURL: "https://okinawa-defcf-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "okinawa-defcf",
+    storageBucket: "okinawa-defcf.firebasestorage.app",
+    messagingSenderId: "447498921943",
+    appId: "1:447498921943:web:f1c23237db851a3ec74d92"
+  };
 
-    // 初始化 Firebase 並將大腦掛載到全域視窗，供下方的記帳按鈕使用
-    const app = initializeApp(firebaseConfig);
-    window.dbDatabase = getDatabase(app);
-    window.dbRef = ref;
-    window.dbPush = push;
-
-   // 📡 雲端即時廣播器：加上 window.sharedAccountBook 強效防洗空保險，多人秒級同步正式通電
-    onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
-      const data = snapshot.val();
-      const list = [];
-      if (data) {
-        Object.keys(data).forEach(key => {
-          list.unshift({ id: key, ...data[key] });
-        });
-      }
-      
-      // 💡 穿透作用域防火牆：同時塞滿所有變數通道，不論網頁怎麼重整，通通強制同步最新雲端資料！
-      window.accountBook = list;
-      accountBook = list;
-      window.sharedAccountBook = list;
-
-      // 如果下方的渲染函數完全準備好了，立刻命令它重新把畫面畫出來
-      if (typeof renderLedger === 'function') {
-        renderLedger();
-      } else {
-        // 🛑 防搶跑機制：如果網頁還在初始化，定時 0.3 秒後再次強制刷新，確保重整資料絕對不消失！
-        setTimeout(() => {
-          if (typeof renderLedger === 'function') {
-            renderLedger();
-          }
-        }, 300);
-      }
-    });
-      
-  </script>
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -552,11 +522,7 @@
         }
 
         // 記帳紀錄
-        accountBook = [];
-        // 📡 背景神偷同步器：每 0.1 秒自動把頂部共享箱子的最新雲端資料偷下來同步給底部，保證重整不漏接、兩邊秒同步！
-setInterval(() => {
-  if (window.accountBook) accountBook = window.accountBook;
-}, 100);
+        let accountBook = [];
         try {
             const rawA = localStorage.getItem(STORAGE_EXPENSES_KEY);
             accountBook = rawA ? JSON.parse(rawA) : [
@@ -583,10 +549,7 @@ setInterval(() => {
             renderDayTabs();
             renderDay(0);
             renderTickets();
-            // 🛑 開機保護防線：如果雲端資料還在路上，先不搶跑，等 0.4 秒大腦上線後再執行，保證重整絕不洗空！
-  setTimeout(() => {
-    renderLedger();
-  }, 400);
+            renderLedger();
             convertCurrency('jpy');
         };
 
@@ -744,32 +707,30 @@ setInterval(() => {
             const now = new Date();
             const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             
-            const recordId = Date.now().toString();
-const item = { id: recordId, category, type, desc, amount, twd, time: timeStr };
-accountBook.unshift(item); saveLedger(); renderLedger();
-try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(window.dbDatabase, 'okinawa_ledger/' + recordId), item); } } catch(e) { console.log(e); }
+            const item = { category, type, desc, amount, twd, timeStr };
+
+            // 安全性防呆驗證：防範雲端大腦尚未完全就位時的點擊
+            if(typeof window.dbPush !== 'function') {
+                showToast("⏳ 雲端同步連線中，請稍候重試...");
+                return;
+            }
+
+            // 🚀 直接發射、推送到 Firebase 雲端實時資料庫
+            const db = window.dbDatabase;
+            window.dbPush(window.dbRef(db, 'okinawa_ledger'), item);
+
             // 清空輸入框
             document.getElementById('ins-amount').value = '';
             document.getElementById('ins-desc').value = '';
             showToast("🚀 支出已成功發射同步至雲端！");
         }
         
-       function deleteRecord(id) {
-  accountBook = accountBook.filter(item => {
-    if (!item || !item.id) return false;
-    return item.id.toString() !== id.toString();
-  });
-  saveLedger();
-  renderLedger();
-  showToast("🗑 正在同步雲端刪除...");
-  if (window.dbDatabase) {
-    const db = window.dbDatabase;
-    import("https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js").then((mod) => {
-      mod.remove(mod.ref(db, 'okinawa_ledger/' + id)).catch(e => console.log(e));
-    });
-  }
-}
-
+        function deleteRecord(id) {
+            accountBook = accountBook.filter(item => item.id !== id);
+            saveLedger();
+            renderLedger();
+            showToast("🗑️ 已移除該筆紀錄");
+        }
 
         function clearAllExpenses() {
             if (accountBook.length === 0) return;
@@ -783,21 +744,15 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
         }
 
         function saveLedger() {
-  try {
-    // 💡 修正後：優先去存 window.accountBook 這個共享大箱子，重新整理就絕對不會再被洗空！
-    if (window.accountBook && window.accountBook.length > 0) {
-      localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(window.accountBook));
-    } else if (accountBook && accountBook.length > 0) {
-      localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(accountBook));
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
+            try {
+                localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(accountBook));
+            } catch (e) {
+                console.error(e);
+            }
+        }
 
         function renderLedger() {
             const box = document.getElementById('records-box');
-            if (window.accountBook) accountBook = window.accountBook;
             box.innerHTML = '';
 
             let cashSum = 0;
@@ -834,7 +789,7 @@ try { if (typeof window.dbPush === 'function') { window.dbPush(window.dbRef(wind
                                 <div class="font-bold text-slate-800 text-sm">¥${item.amount.toLocaleString()}</div>
                                 <div class="text-[10px] text-slate-400">≈ NT$ ${item.twd.toLocaleString()}</div>
                             </div>
-                            <button onclick="deleteRecord('${ item. id}')" class="text-slate-300 hover:text-red-500 text-sm p-1 transition" title="刪除">
+                            <button onclick="deleteRecord(${item.id})" class="text-slate-300 hover:text-red-500 text-sm p-1 transition" title="刪除">
                                 &times;
                             </button>
                         </div>
