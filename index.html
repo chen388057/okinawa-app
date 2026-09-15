@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>202610 沖繩自駕自由行 - 隨身助手</title>
     
-    <!-- 引入 Firebase SDK (多人連線即時記帳必備) -->
     <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  import { getDatabase, ref, push, onValue } from "https://gstatic.com/firebasejs/12.19.0/firebase-database.js";
+  import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
 
-  // Your web app's Firebase configuration
+  import {
+    getDatabase,
+    ref,
+    push,
+    onValue,
+    remove
+  } from
+    "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyDytE1VeJcAHxk8-qiG5MQM1KRcUDSMW8s",
     authDomain: "okinawa-defcf.firebaseapp.com",
@@ -23,8 +28,17 @@
     appId: "1:447498921943:web:f1c23237db851a3ec74d92"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const ledgerRef = ref(db, "okinawa_ledger");
+
+  // 提供給記帳本使用
+  window.dbDatabase = db;
+  window.dbRef = ref;
+  window.dbPush = push;
+  window.dbOnValue = onValue;
+  window.dbRemove = remove;
+  window.ledgerRef = ledgerRef;
 </script>
 
     <!-- Tailwind CSS CDN -->
@@ -543,15 +557,16 @@
         }
 
         window.onload = function() {
-            document.getElementById('meta-rate-display').innerText = currentRate;
-            document.getElementById('custom-rate-input').value = currentRate;
+    document.getElementById('meta-rate-display').innerText = currentRate;
+    document.getElementById('custom-rate-input').value = currentRate;
+    renderDayTabs();
+    renderDay(0);
+    renderTickets();
+    renderLedger();
+    convertCurrency('jpy');
 
-            renderDayTabs();
-            renderDay(0);
-            renderTickets();
-            renderLedger();
-            convertCurrency('jpy');
-        };
+    loadLedgerFromFirebase();
+};
 
         // 渲染天數按鈕
         function renderDayTabs() {
@@ -695,54 +710,68 @@
         }
 
         // 記帳本功能
-         function addRecord() {
-            const category = document.getElementById('ins-category').value;
-            const type = document.getElementById('ins-type').value;
-            const desc = document.getElementById('ins-desc').value.trim() || '日常花費';
-            const amount = parseFloat(document.getElementById('ins-amount').value);
-            
-            if(isNaN(amount) || amount <= 0) { showToast("⚠️ 請輸入正確的日圓金額！"); return; }
+      async function addRecord() {
+    const category = document.getElementById('ins-category').value;
+    const type = document.getElementById('ins-type').value;
+    const desc = document.getElementById('ins-desc').value.trim() || '日常花費';
+    const amount = parseFloat(document.getElementById('ins-amount').value);
 
-            const twd = Math.round(amount * currentRate);
-            const now = new Date();
-            const timeStr = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            
-            const item = { category, type, desc, amount, twd, timeStr };
+    if (!Number.isFinite(amount) || amount <= 0) {
+        showToast("⚠️ 請輸入正確的日圓金額！");
+        return;
+    }
 
-            // 安全性防呆驗證：防範雲端大腦尚未完全就位時的點擊
-            if(typeof window.dbPush !== 'function') {
-                showToast("⏳ 雲端同步連線中，請稍候重試...");
-                return;
-            }
+    const twd = Math.round(amount * currentRate);
+    const now = new Date();
 
-            // 🚀 直接發射、推送到 Firebase 雲端實時資料庫
-            const db = window.dbDatabase;
-            window.dbPush(window.dbRef(db, 'okinawa_ledger'), item);
+    const item = {
+        category,
+        type,
+        desc,
+        amount,
+        twd,
+        time: `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+        createdAt: Date.now()
+    };
 
-            // 清空輸入框
-            document.getElementById('ins-amount').value = '';
-            document.getElementById('ins-desc').value = '';
-            showToast("🚀 支出已成功發射同步至雲端！");
-        }
-        
-        function deleteRecord(id) {
-            accountBook = accountBook.filter(item => item.id !== id);
-            saveLedger();
-            renderLedger();
-            showToast("🗑️ 已移除該筆紀錄");
-        }
+    if (typeof window.dbPush !== 'function' || !window.ledgerRef) {
+        showToast("⏳ 雲端同步連線中，請稍候重試...");
+        return;
+    }
 
-        function clearAllExpenses() {
-            if (accountBook.length === 0) return;
-            // 替換原生 confirm 為簡化流程確認
-            if (window.confirm("確定要清空所有的消費明細嗎？")) {
-                accountBook = [];
-                saveLedger();
-                renderLedger();
-                showToast("已清空所有記帳明細");
-            }
-        }
+    try {
+        await window.dbPush(window.ledgerRef, item);
 
+        document.getElementById('ins-amount').value = '';
+        document.getElementById('ins-desc').value = '';
+
+        showToast("✅ 支出已成功同步至雲端！");
+    } catch (error) {
+        console.error("Firebase 儲存失敗：", error);
+        showToast("❌ 儲存失敗，請檢查網路或 Firebase 權限");
+    }
+}
+function loadLedgerFromFirebase() {
+    if (typeof window.dbOnValue !== 'function' || !window.ledgerRef) {
+        return;
+    }
+
+    window.dbOnValue(window.ledgerRef, (snapshot) => {
+        const data = snapshot.val();
+
+        accountBook = data
+            ? Object.entries(data).map(([id, item]) => ({
+                ...item,
+                id
+            })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+            : [];
+
+        renderLedger();
+    }, (error) => {
+        console.error("Firebase 讀取失敗：", error);
+        showToast("❌ 無法讀取雲端記帳資料");
+    });
+}
         function saveLedger() {
             try {
                 localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(accountBook));
