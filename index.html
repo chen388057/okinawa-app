@@ -6,41 +6,41 @@
     <title>202610 沖繩自駕自由行 - 隨身助手</title>
     
     <!-- 引入 Firebase SDK (多人連線即時記帳必備) -->
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  import { getDatabase, ref, push, onValue } from "https://gstatic.com/firebasejs/12.19.0/firebase-database.js";
+    <!-- 引入 Firebase SDK (多人連線即時記帳必備) -->
+  <script type="module">
+    import { initializeApp } from "https://gstatic.com";
+    import { getDatabase, ref, push, onValue } from "https://gstatic.com";
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyDytE1VeJcAHxk8-qiG5MQM1KRcUDSMW8s",
-    authDomain: "okinawa-defcf.firebaseapp.com",
-    databaseURL: "https://okinawa-defcf-default-rtdb.asia-southeast1.firebasedatabase.app/",
-    projectId: "okinawa-defcf",
-    storageBucket: "okinawa-defcf.firebasestorage.app",
-    messagingSenderId: "447498921943",
-    appId: "1:447498921943:web:f1c23237db851a3ec74d92"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyDytE1VeJcAHxk8-qiG5MQM1KRcUDSMW8s",
+      authDomain: "okinawa-defcf.firebaseapp.com",
+      databaseURL: "https://okinawa-defcf-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "okinawa-defcf",
+      storageBucket: "okinawa-defcf.firebasestorage.app",
+      messagingSenderId: "447498921943",
+      appId: "1:447498921943:web:f1c23237db851a3ec74d92"
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-        window.dbDatabase = getDatabase(app);
-        window.dbRef = ref;
-        window.dbPush = push;
-        onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    const list = [];
-    Object.keys(data).forEach(key => {
-      list.unshift({ id: key, ...data[key] });
+    // 初始化 Firebase 並將大腦掛載到全域視窗，供下方的記帳按鈕使用
+    const app = initializeApp(firebaseConfig);
+    window.dbDatabase = getDatabase(app);
+    window.dbRef = ref;
+    window.dbPush = push;
+
+    // 即時下載雲端帳目廣播機：只要任何人記帳，大家的網頁畫面就會在 1 秒內自動跳出明細！
+    onValue(ref(window.dbDatabase, 'okinawa_ledger'), (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = [];
+        Object.keys(data).forEach(key => {
+          list.unshift({ id: key, ...data[key] });
+        });
+        window.accountBook = list;
+        if (typeof window.saveLedger === 'function') window.saveLedger();
+        if (typeof window.renderLedger === 'function') window.renderLedger();
+      }
     });
-    accountBook = list;
-    saveLedger();
-    renderLedger();
-  }
-});
-</script>
+  </script>
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
