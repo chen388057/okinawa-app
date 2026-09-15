@@ -759,8 +759,9 @@
                 box.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs">目前尚無任何消費記錄，點擊上方儲存第一筆吧！</div>`;
             } else {
              // 🌟 分天記帳過濾核心：如果當前不是選「全行程」，且這筆消費的天數不符，就跳過不加總不顯示
-                if (window.currentLedgerDay !== 'all' && item.day !== window.currentLedgerDay) {
-                    return;
+               // 🌟 1. 把過濾防線放進大括號裡面
+              if (window.currentLedgerDay !== 'all' && item.day !== window.currentLedgerDay) {
+              return;
                 }
                 if (item.type && item.type.includes('現金')) {
                         cashSum += item.amount;
@@ -801,7 +802,7 @@
             document.getElementById('sum-all-foreign').innerText = allForeign.toLocaleString();
             document.getElementById('sum-all-twd').innerText = allTwd.toLocaleString();
         };
-
+});
         window.downloadCSV = function() {
             if (!window.accountBook || window.accountBook.length === 0) {
                 showToast("⚠️ 目前沒有消費明細可以導出唷！");
