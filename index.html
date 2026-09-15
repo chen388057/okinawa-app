@@ -28,7 +28,7 @@
         window.dbDatabase = getDatabase(app);
         window.dbRef = ref;
         window.dbPush = push;
-        onValue(ref(window.dbDatabase, 'okinawa_ledger'), (snapshot) => {
+        onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
   const data = snapshot.val();
   if (data) {
     const list = [];
