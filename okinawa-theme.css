@@ -169,4 +169,15 @@ textarea {
   background: #D7E9E1;
   color: #3F504C;
 }
+body {
+  background: #FFF9EF !important;
+}
+
+header {
+  background: #6FA8A8 !important;
+}
+
+.bg-white {
+  background: #FFFEFB !important;
+}
 ```
