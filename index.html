@@ -260,6 +260,15 @@
                 <div class="space-y-3 text-xs">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
+                            <label class="block text-slate-500 mb-1 font-medium">旅程天數</label>
+                            <select id="ins-day" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="0">DAY 1｜10/08</option>
+                                <option value="1">DAY 2｜10/09</option>
+                                <option value="2">DAY 3｜10/10</option>
+                                <option value="3">DAY 4｜10/11</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-slate-500 mb-1 font-medium">消費類別</label>
                             <select id="ins-category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="🍱 餐飲">🍱 餐飲</option>
@@ -862,6 +871,7 @@ function loadTicketsFromFirebase() {
 
 async function addRecord() {
   const category = document.getElementById('ins-category').value;
+  const day = Number(document.getElementById('ins-day').value);
   const type = document.getElementById('ins-type').value;
   const desc =
     document.getElementById('ins-desc').value.trim() || '日常花費';
@@ -885,6 +895,7 @@ async function addRecord() {
     `${String(now.getMinutes()).padStart(2, '0')}`;
 
   const item = {
+    day: day,
     category: category,
     type: type,
     desc: desc,
@@ -1088,6 +1099,9 @@ function renderLedger() {
             <span class="text-[10px] text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
               ${item.category || ''}
             </span>
+            <span class="text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
+    DAY ${(Number(item.day) || 0) + 1}
+</span>
 
           </div>
 
