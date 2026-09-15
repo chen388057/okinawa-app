@@ -27,8 +27,7 @@
     window.dbRef = ref;
     window.dbPush = push;
 
-   // 📡 雲端即時廣播器：加上強效防覆寫保險，多人秒級同步正式通電
-    onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
+   onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
       const data = snapshot.val();
       const list = [];
       if (data) {
@@ -36,26 +35,9 @@
           list.unshift({ id: key, ...data[key] });
         });
       }
-      
-      // 💡 強制全域與本地抽屜融為一體，確保所有函數讀取的都是同一個地方
-      window.accountBook = list;
-      accountBook = list;
-
-      // 🛑 防提早覆寫機制：只有當網頁下方的渲染功能完全準備好時，才允許執行儲存與畫面重新整理
-      if (typeof window.renderLedger === 'function') {
-        window.saveLedger();
-        window.renderLedger();
-      } else if (typeof renderLedger === 'function') {
-        saveLedger();
-        renderLedger();
-      } else {
-        // 如果網頁還在開機，等 0.5 秒完全載入後再優雅地畫出畫面
-        setTimeout(() => {
-          if (typeof renderLedger === 'function') {
-            saveLedger();
-            renderLedger();
-          }
-        }, 500);
+      accountBook = list; // 👈 存入打通後的全域抽屜
+      if (typeof renderLedger === 'function') {
+        renderLedger(); // 👈 立刻逼畫面重新畫出來
       }
     });
       
