@@ -749,6 +749,12 @@
     const box = document.getElementById('records-box');
     if (!box) return;
     box.innerHTML = '';
+    
+    // 🌟 終極救星：確保雲端資料還沒下載完前，畫面上的卡片也能正常被叫醒並初始化歸零！
+    if (!window.accountBook) window.accountBook = [];
+    document.getElementById('sum-cash').innerText = '¥0';
+    document.getElementById('sum-card').innerText = '¥0';
+            
     let cashSum = 0;
     let cardSum = 0;
     let allForeign = 0;
