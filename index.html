@@ -727,13 +727,17 @@
             showToast("🗑️ 已移除該憑證");
         }
 
-        // ==================== 記帳本功能 ====================
+// ==================== 記帳本功能 ====================
 
 async function addRecord() {
   const category = document.getElementById('ins-category').value;
   const type = document.getElementById('ins-type').value;
-  const desc = document.getElementById('ins-desc').value.trim() || '日常花費';
-  const amount = parseFloat(document.getElementById('ins-amount').value);
+  const desc =
+    document.getElementById('ins-desc').value.trim() || '日常花費';
+
+  const amount = Number(
+    document.getElementById('ins-amount').value
+  );
 
   if (!Number.isFinite(amount) || amount <= 0) {
     showToast("⚠️ 請輸入正確的日圓金額！");
@@ -741,49 +745,52 @@ async function addRecord() {
   }
 
   const twd = Math.round(amount * currentRate);
+
   const now = new Date();
 
-  const time = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const time =
+    `${now.getMonth() + 1}/${now.getDate()} ` +
+    `${String(now.getHours()).padStart(2, '0')}:` +
+    `${String(now.getMinutes()).padStart(2, '0')}`;
 
   const item = {
-    category,
-    type,
-    desc,
-    amount,
-    twd,
-    time,
+    category: category,
+    type: type,
+    desc: desc,
+    amount: amount,
+    twd: twd,
+    time: time,
     createdAt: Date.now()
   };
 
   if (
     typeof window.dbPush !== 'function' ||
-    typeof window.dbRef !== 'function' ||
-    !window.dbDatabase
+    !window.ledgerRef
   ) {
     showToast("⏳ 雲端同步連線中，請稍候重試...");
     return;
   }
 
   try {
-    // 寫入 Firebase
-    await window.dbPush(
-      window.dbRef(window.dbDatabase, 'okinawa_ledger'),
-      item
-    );
 
-    // 清空輸入框
+    await window.dbPush(window.ledgerRef, item);
+
     document.getElementById('ins-amount').value = '';
     document.getElementById('ins-desc').value = '';
 
     showToast("✅ 支出已成功同步至雲端！");
+
   } catch (error) {
-    console.error("Firebase 新增失敗：", error);
+
+    console.error("Firebase 儲存失敗：", error);
+
     showToast("❌ 儲存失敗，請檢查網路或 Firebase 權限");
+
   }
 }
 
 
-// ==================== 刪除單筆記帳 ====================
+// ==================== 刪除單筆 ====================
 
 async function deleteRecord(id) {
 
@@ -805,18 +812,19 @@ async function deleteRecord(id) {
 
     await window.dbRemove(recordRef);
 
-    showToast("🗑️ 已刪除該筆紀錄");
+    showToast("🗑️ 已刪除這筆紀錄");
 
   } catch (error) {
 
     console.error("Firebase 刪除失敗：", error);
 
     showToast("❌ 刪除失敗，請稍後再試");
+
   }
 }
 
 
-// ==================== 清空全部記帳 ====================
+// ==================== 清空全部 ====================
 
 async function clearAllExpenses() {
 
@@ -825,7 +833,7 @@ async function clearAllExpenses() {
     return;
   }
 
-  if (!window.confirm("確定要清空所有的消費明細嗎？")) {
+  if (!confirm("確定要清空所有的消費明細嗎？")) {
     return;
   }
 
@@ -841,7 +849,10 @@ async function clearAllExpenses() {
   try {
 
     await window.dbRemove(
-      window.dbRef(window.dbDatabase, 'okinawa_ledger')
+      window.dbRef(
+        window.dbDatabase,
+        'okinawa_ledger'
+      )
     );
 
     showToast("🗑️ 已清空所有記帳明細");
@@ -851,6 +862,7 @@ async function clearAllExpenses() {
     console.error("Firebase 清空失敗：", error);
 
     showToast("❌ 清空失敗，請稍後再試");
+
   }
 }
 
@@ -866,15 +878,15 @@ function saveLedger() {
       JSON.stringify(accountBook)
     );
 
-  } catch (e) {
+  } catch (error) {
 
-    console.error("LocalStorage 儲存失敗：", e);
+    console.error("LocalStorage 儲存失敗：", error);
 
   }
 }
 
 
-// ==================== 顯示記帳資料＋重新計算總和 ====================
+// ==================== 顯示記帳＋重新計算總和 ====================
 
 function renderLedger() {
 
@@ -900,7 +912,6 @@ function renderLedger() {
 
     accountBook.forEach(item => {
 
-      // 確保金額一定是數字
       const amount = Number(item.amount) || 0;
       const twd = Number(item.twd) || 0;
 
@@ -916,21 +927,25 @@ function renderLedger() {
 
       }
 
-      // 全部支出
+      // 全部
       allForeign += amount;
       allTwd += twd;
 
 
-      // Firebase 的 ID 是字串，所以一定要用 JSON.stringify
-      const safeId = JSON.stringify(String(item.id));
+      // Firebase ID 一定當成字串處理
+      const safeId =
+        JSON.stringify(String(item.id));
+
 
       const row = document.createElement('div');
 
       row.className =
-        'py-2.5 flex items-center justify-between text-xs hover:bg-slate-50 px-1 rounded-lg transition';
+        'py-2.5 flex items-center justify-between ' +
+        'text-xs hover:bg-slate-50 px-1 rounded-lg transition';
 
 
       row.innerHTML = `
+
         <div class="space-y-0.5">
 
           <div class="flex items-center gap-1.5">
@@ -946,9 +961,17 @@ function renderLedger() {
           </div>
 
           <div class="text-[10px] text-slate-400">
-            <span>${item.time || item.timeStr || ''}</span>
+
+            <span>
+              ${item.time || item.timeStr || ''}
+            </span>
+
             •
-            <span>${item.type || ''}</span>
+
+            <span>
+              ${item.type || ''}
+            </span>
+
           </div>
 
         </div>
@@ -980,6 +1003,7 @@ function renderLedger() {
         </div>
       `;
 
+
       box.appendChild(row);
 
     });
@@ -988,7 +1012,7 @@ function renderLedger() {
 
 
   // ====================
-  // 更新四個統計數字
+  // 更新統計
   // ====================
 
   document.getElementById('sum-cash').innerText =
@@ -998,10 +1022,10 @@ function renderLedger() {
     `¥${cardSum.toLocaleString()}`;
 
   document.getElementById('sum-all-foreign').innerText =
-    allForeign.toLocaleString();
+    `¥${allForeign.toLocaleString()}`;
 
   document.getElementById('sum-all-twd').innerText =
-    allTwd.toLocaleString();
+    `NT$ ${allTwd.toLocaleString()}`;
 }
         function renderLedger() {
             const box = document.getElementById('records-box');
