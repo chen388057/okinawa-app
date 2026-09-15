@@ -27,7 +27,8 @@
     window.dbRef = ref;
     window.dbPush = push;
 
-   onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
+   // 📡 雲端即時廣播器：加上 window.sharedAccountBook 強效防洗空保險，多人秒級同步正式通電
+    onValue(ref(getDatabase(app), 'okinawa_ledger'), (snapshot) => {
       const data = snapshot.val();
       const list = [];
       if (data) {
@@ -35,13 +36,23 @@
           list.unshift({ id: key, ...data[key] });
         });
       }
-      window.accountBook = list; // 💡 強制塞入公開共享箱子
-accountBook = list;
-if (typeof window.renderLedger === 'function') {
-    window.renderLedger(); // 💡 穿透防火牆直接通知下方畫面刷新
-} else if (typeof renderLedger === 'function') {
-    renderLedger();
-}
+      
+      // 💡 穿透作用域防火牆：同時塞滿所有變數通道，不論網頁怎麼重整，通通強制同步最新雲端資料！
+      window.accountBook = list;
+      accountBook = list;
+      window.sharedAccountBook = list;
+
+      // 如果下方的渲染函數完全準備好了，立刻命令它重新把畫面畫出來
+      if (typeof renderLedger === 'function') {
+        renderLedger();
+      } else {
+        // 🛑 防搶跑機制：如果網頁還在初始化，定時 0.3 秒後再次強制刷新，確保重整資料絕對不消失！
+        setTimeout(() => {
+          if (typeof renderLedger === 'function') {
+            renderLedger();
+          }
+        }, 300);
+      }
     });
       
   </script>
