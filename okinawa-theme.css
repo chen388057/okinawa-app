@@ -1,1119 +1,220 @@
 ```css
 /* 🌺 沖繩隨身助手｜沖繩日雜海島風 */
 
-:root {
-    /* 背景 */
-    --muji-bg: #F2EEE8;
-    --muji-bg-deep: #E9E3DB;
-
-    /* 紙張 */
-    --muji-paper: #FCFAF7;
-    --muji-paper-soft: #F7F4EF;
-    --muji-paper-dark: #ECE7DF;
-
-    /* 文字 */
-    --muji-ink: #3F3C37;
-    --muji-ink-soft: #625D56;
-    --muji-muted: #817A71;
-    --muji-light: #AAA39A;
-
-    /* 主色：咖啡灰 */
-    --muji-brown: #756D63;
-    --muji-brown-dark: #5E574F;
-    --muji-brown-light: #D8D0C6;
-
-    /* 線條 */
-    --muji-line: #DDD6CD;
-    --muji-line-light: #E9E4DD;
-
-    /* 赤陶色：只做少量提醒 */
-    --muji-red: #9B6252;
-    --muji-red-soft: #F1E4DE;
-
-    /* 橄欖灰綠 */
-    --muji-green: #747A6B;
-    --muji-green-soft: #E7E9E2;
-
-    /* 沙色 */
-    --muji-sand: #9A8B77;
-    --muji-sand-soft: #EEE8DE;
-
-    /* 純白 */
-    --muji-white: #FFFFFF;
-
-    /* 陰影 */
-    --muji-shadow: rgba(67, 59, 50, 0.065);
-    --muji-shadow-small: rgba(67, 59, 50, 0.035);
-}
-
-
-/* =========================================================
-   02. PAGE / BODY
-========================================================= */
-
 html {
     min-height: 100%;
-    background: var(--muji-bg) !important;
-    overscroll-behavior-y: none;
+    background-color: #F2EEE8 !important;
+    overscroll-behavior-y: none !important;
 }
 
 body {
-    margin: 0;
-    min-height: 100vh;
+    min-height: 100%;
+    height: auto !important;
+    margin: 0 !important;
 
-    background-color: var(--muji-bg) !important;
-    color: var(--muji-ink) !important;
-
-    font-family:
-        "Noto Sans TC",
-        "PingFang TC",
-        "Microsoft JhengHei",
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-
-    -webkit-tap-highlight-color: transparent;
-
-    padding-bottom:
-        calc(90px + env(safe-area-inset-bottom, 0px));
-}
-
-
-/* 防止最外層又出現白色 */
-
-body,
-#root,
-#app,
-.min-h-screen {
-    background-color: var(--muji-bg) !important;
-}
-
-
-/* =========================================================
-   03. MAIN
-========================================================= */
-
-main {
-    color: var(--muji-ink);
-}
-
-
-/* =========================================================
-   04. HEADER
-   原本藍色漸層 → 米白 MUJI
-========================================================= */
-
-header {
-    background: var(--muji-paper) !important;
-    color: var(--muji-ink) !important;
-
-    border: 0 !important;
-    border-bottom: 1px solid var(--muji-line-light) !important;
-
-    box-shadow:
-        0 2px 12px var(--muji-shadow-small) !important;
-
-    backdrop-filter: none !important;
-}
-
-
-/* Header 裡原本的白字 */
-
-header .text-white {
-    color: var(--muji-ink) !important;
-}
-
-
-/* Header 次要文字 */
-
-header .text-blue-100,
-header .text-blue-200,
-header .text-sky-100,
-header .text-sky-200,
-header .text-indigo-100,
-header .text-indigo-200 {
-    color: var(--muji-muted) !important;
-}
-
-
-/* Header 半透明白色小區塊 */
-
-header .bg-white\/10,
-header .bg-white\/20,
-header .bg-white\/30 {
-    background: var(--muji-paper-soft) !important;
-    color: var(--muji-ink-soft) !important;
-
-    border: 1px solid var(--muji-line-light) !important;
-}
-
-
-/* Header 綠色狀態點 */
-
-header .bg-emerald-400,
-header .bg-green-400 {
-    background: var(--muji-green) !important;
-}
-
-
-/* =========================================================
-   05. CARD / PAPER
-========================================================= */
-
-.bg-white {
-    background-color: var(--muji-paper) !important;
-}
-
-
-/* 常見卡片 */
-
-.rounded-2xl,
-.rounded-3xl {
-    border-color: var(--muji-line-light) !important;
-}
-
-
-/* =========================================================
-   06. BORDER
-   不要黑色粗框
-========================================================= */
-
-.border,
-.border-slate-100,
-.border-slate-200,
-.border-slate-300,
-.border-gray-100,
-.border-gray-200,
-.border-gray-300 {
-    border-color: var(--muji-line-light) !important;
-}
-
-
-/* 特別壓掉深色邊框 */
-
-.border-black,
-.border-gray-900,
-.border-gray-800,
-.border-slate-900,
-.border-slate-800,
-.border-slate-700 {
-    border-color: var(--muji-line) !important;
-}
-
-
-/* =========================================================
-   07. SHADOW
-========================================================= */
-
-.shadow,
-.shadow-sm,
-.shadow-md,
-.shadow-lg,
-.shadow-xl,
-.shadow-2xl {
-    box-shadow:
-        0 3px 14px var(--muji-shadow-small) !important;
-}
-
-
-/* =========================================================
-   08. TEXT
-========================================================= */
-
-.text-black,
-.text-slate-900,
-.text-slate-800,
-.text-gray-900,
-.text-gray-800 {
-    color: var(--muji-ink) !important;
-}
-
-.text-slate-700,
-.text-slate-600,
-.text-gray-700,
-.text-gray-600 {
-    color: var(--muji-ink-soft) !important;
-}
-
-.text-slate-500,
-.text-slate-400,
-.text-gray-500,
-.text-gray-400 {
-    color: var(--muji-muted) !important;
-}
-
-.text-slate-300,
-.text-gray-300 {
-    color: var(--muji-light) !important;
-}
-
-
-/* =========================================================
-   09. BLUE → MUJI
-   把原本 Tailwind 的藍色轉成咖啡灰
-========================================================= */
-
-.bg-blue-500,
-.bg-blue-600,
-.bg-blue-700,
-.bg-blue-800,
-
-.bg-indigo-500,
-.bg-indigo-600,
-.bg-indigo-700,
-
-.bg-sky-500,
-.bg-sky-600,
-.bg-sky-700 {
-    background-color: var(--muji-brown) !important;
-    color: var(--muji-white) !important;
-
-    border-color: var(--muji-brown) !important;
-}
-
-
-/* 藍色按鈕內部文字 */
-
-.bg-blue-500 *,
-.bg-blue-600 *,
-.bg-blue-700 *,
-.bg-blue-800 *,
-.bg-indigo-500 *,
-.bg-indigo-600 *,
-.bg-indigo-700 *,
-.bg-sky-500 *,
-.bg-sky-600 *,
-.bg-sky-700 * {
-    color: var(--muji-white) !important;
-}
-
-
-/* Hover */
-
-.hover\:bg-blue-600:hover,
-.hover\:bg-blue-700:hover,
-.hover\:bg-indigo-600:hover,
-.hover\:bg-indigo-700:hover,
-.hover\:bg-sky-600:hover,
-.hover\:bg-sky-700:hover {
-    background-color: var(--muji-brown-dark) !important;
-    color: var(--muji-white) !important;
-}
-
-
-/* =========================================================
-   10. BLUE TEXT
-========================================================= */
-
-.text-blue-900,
-.text-blue-800,
-.text-blue-700,
-.text-blue-600,
-.text-blue-500,
-
-.text-indigo-900,
-.text-indigo-800,
-.text-indigo-700,
-.text-indigo-600,
-
-.text-sky-900,
-.text-sky-800,
-.text-sky-700,
-.text-sky-600 {
-    color: var(--muji-brown-dark) !important;
-}
-
-
-/* =========================================================
-   11. BLUE LIGHT BACKGROUND
-========================================================= */
-
-.bg-blue-50,
-.bg-blue-50\/70,
-.bg-blue-50\/80,
-.bg-blue-100,
-
-.bg-indigo-50,
-.bg-indigo-100,
-
-.bg-sky-50,
-.bg-sky-100 {
-    background-color: var(--muji-paper-soft) !important;
-}
-
-
-/* 藍色細框 */
-
-.border-blue-100,
-.border-blue-200,
-.border-blue-300,
-
-.border-indigo-100,
-.border-indigo-200,
-
-.border-sky-100,
-.border-sky-200 {
-    border-color: var(--muji-line) !important;
-}
-
-
-/* =========================================================
-   12. SLATE / GRAY BACKGROUND
-========================================================= */
-
-.bg-slate-50,
-.bg-gray-50 {
-    background-color: var(--muji-paper-soft) !important;
-}
-
-.bg-slate-100,
-.bg-gray-100 {
-    background-color: var(--muji-paper-dark) !important;
-}
-
-.bg-slate-200,
-.bg-gray-200 {
-    background-color: #E3DED6 !important;
-}
-
-
-/* =========================================================
-   13. DAY TABS
-   ⭐ 最重要
-   不使用全域 .active
-========================================================= */
-
-#day-tabs {
-    padding-top: 4px;
-    padding-bottom: 7px;
-}
-
-
-/* 所有 Day 按鈕 */
-
-#day-tabs > button {
-    flex: 0 0 auto;
-
-    min-width: 74px;
-
-    padding: 10px 15px;
-
-    border-radius: 12px !important;
-
-    border: 1px solid var(--muji-line) !important;
-
-    background: var(--muji-paper) !important;
-
-    color: var(--muji-ink-soft) !important;
-
-    font-size: 12px;
-    font-weight: 600;
-
-    box-shadow:
-        0 1px 4px var(--muji-shadow-small) !important;
-
-    transition:
-        background-color 0.18s ease,
-        color 0.18s ease,
-        border-color 0.18s ease,
-        transform 0.12s ease;
-}
-
-
-/* Day 按鈕裡面的文字 / icon */
-
-#day-tabs > button * {
-    color: inherit !important;
-}
-
-
-/* 滑過 */
-
-#day-tabs > button:hover {
-    background: var(--muji-paper-dark) !important;
-    color: var(--muji-ink) !important;
-    border-color: var(--muji-brown-light) !important;
-}
-
-
-/* =========================================================
-   14. DAY SELECTED
-   ⭐ JS 實際使用 bg-blue-600
-   所以直接鎖定這個 class
-========================================================= */
-
-#day-tabs > button.bg-blue-600,
-#day-tabs > button.bg-blue-700,
-#day-tabs > button.bg-indigo-600,
-#day-tabs > button.bg-indigo-700 {
-    background-color: var(--muji-brown-dark) !important;
-
-    color: var(--muji-white) !important;
-
-    border-color: var(--muji-brown-dark) !important;
-
-    font-weight: 700 !important;
-
-    box-shadow:
-        0 3px 9px rgba(70, 63, 55, 0.13) !important;
-}
-
-
-/* Selected Day 內部 */
-
-#day-tabs > button.bg-blue-600 *,
-#day-tabs > button.bg-blue-700 *,
-#day-tabs > button.bg-indigo-600 *,
-#day-tabs > button.bg-indigo-700 * {
-    color: var(--muji-white) !important;
-}
-
-
-/* 如果未來 JS 使用 active，也支援 */
-
-#day-tabs > button.active {
-    background-color: var(--muji-brown-dark) !important;
-    color: var(--muji-white) !important;
-    border-color: var(--muji-brown-dark) !important;
-}
-
-
-/* active 裡面的文字 */
-
-#day-tabs > button.active * {
-    color: var(--muji-white) !important;
-}
-
-
-/* 點擊 */
-
-#day-tabs > button:active {
-    transform: scale(0.97);
-}
-
-
-/* =========================================================
-   15. LEDGER DAY BUTTON
-========================================================= */
-
-.ledger-day-btn {
-    background: var(--muji-paper) !important;
-
-    color: var(--muji-ink-soft) !important;
-
-    border: 1px solid var(--muji-line) !important;
-
-    box-shadow: none !important;
-}
-
-
-/* Ledger hover */
-
-.ledger-day-btn:hover {
-    background: var(--muji-paper-dark) !important;
-    color: var(--muji-ink) !important;
-    border-color: var(--muji-brown-light) !important;
-}
-
-
-/* Ledger 選取 */
-
-.ledger-day-btn.bg-blue-600,
-.ledger-day-btn.bg-blue-700,
-.ledger-day-btn.active,
-.ledger-day-btn.selected,
-.ledger-day-btn[aria-selected="true"] {
-    background-color: var(--muji-brown-dark) !important;
-
-    color: var(--muji-white) !important;
-
-    border-color: var(--muji-brown-dark) !important;
-
-    font-weight: 700 !important;
-
-    box-shadow:
-        0 2px 7px rgba(70, 63, 55, 0.10) !important;
-}
-
-
-/* Ledger selected text */
-
-.ledger-day-btn.bg-blue-600 *,
-.ledger-day-btn.bg-blue-700 *,
-.ledger-day-btn.active *,
-.ledger-day-btn.selected *,
-.ledger-day-btn[aria-selected="true"] * {
-    color: var(--muji-white) !important;
-}
-
-
-/* =========================================================
-   16. TAB CONTENT
-   ⚠️ 只保留原本必要的 .active
-   不讓其他東西受到影響
-========================================================= */
-
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-
-/* =========================================================
-   17. GENERAL BUTTON
-========================================================= */
-
-button {
-    -webkit-tap-highlight-color: transparent;
-}
-
-
-/* 一般白色按鈕 */
-
-button.bg-white {
-    background: var(--muji-paper) !important;
-    color: var(--muji-ink) !important;
-}
-
-
-/* 一般灰色按鈕 */
-
-button.bg-slate-50,
-button.bg-gray-50 {
-    background: var(--muji-paper-soft) !important;
-    color: var(--muji-ink-soft) !important;
-}
-
-button.bg-slate-100,
-button.bg-gray-100 {
-    background: var(--muji-paper-dark) !important;
-    color: var(--muji-ink-soft) !important;
-}
-
-
-/* =========================================================
-   18. INPUT / SELECT / TEXTAREA
-========================================================= */
-
-input,
-select,
-textarea {
-    background-color: var(--muji-paper) !important;
-
-    color: var(--muji-ink) !important;
-
-    border: 1px solid var(--muji-line) !important;
-
-    box-shadow: none !important;
-
-    border-radius: 10px;
-}
-
-
-/* Placeholder */
-
-input::placeholder,
-textarea::placeholder {
-    color: var(--muji-light) !important;
-}
-
-
-/* Focus */
-
-input:focus,
-select:focus,
-textarea:focus {
-    outline: none !important;
-
-    border-color: var(--muji-brown) !important;
-
-    box-shadow:
-        0 0 0 2px rgba(117, 109, 99, 0.10) !important;
-}
-
-
-/* =========================================================
-   19. TIMELINE
-========================================================= */
-
-.timeline-container::before {
-    background: var(--muji-line) !important;
-}
-
-
-/* =========================================================
-   20. DIVIDERS
-========================================================= */
-
-.divide-y > :not([hidden]) ~ :not([hidden]) {
-    border-color: var(--muji-line-light) !important;
-}
-
-.border-b {
-    border-bottom-color: var(--muji-line-light) !important;
-}
-
-.border-t {
-    border-top-color: var(--muji-line-light) !important;
-}
-
-.border-l {
-    border-left-color: var(--muji-line-light) !important;
-}
-
-.border-r {
-    border-right-color: var(--muji-line-light) !important;
-}
-
-
-/* =========================================================
-   21. TICKET BUTTON
-========================================================= */
-
-.ticket-btn {
-    background: var(--muji-paper) !important;
-
-    color: var(--muji-ink) !important;
-
-    border: 1px solid var(--muji-line-light) !important;
-
-    border-radius: 16px;
-
-    box-shadow:
-        0 2px 7px var(--muji-shadow-small) !important;
-
-    text-decoration: none;
-}
-
-
-.ticket-btn:hover {
-    background: var(--muji-paper-soft) !important;
-    border-color: var(--muji-brown-light) !important;
-}
-
-
-/* =========================================================
-   22. TOOL BUTTON
-========================================================= */
-
-.tool-btn {
-    background: var(--muji-paper) !important;
-
-    color: var(--muji-ink) !important;
-
-    border: 1px solid var(--muji-line-light) !important;
-
-    box-shadow:
-        0 2px 7px var(--muji-shadow-small) !important;
-}
-
-
-.tool-btn:hover {
-    background: var(--muji-paper-soft) !important;
-    color: var(--muji-ink) !important;
-    border-color: var(--muji-brown-light) !important;
-}
-
-
-/* =========================================================
-   23. MAP BUTTON
-========================================================= */
-
-.nav-map-btn {
-    background: var(--muji-paper-soft) !important;
-
-    color: var(--muji-ink-soft) !important;
-
-    border: 1px solid var(--muji-line-light) !important;
-
-    box-shadow: none !important;
-}
-
-
-.nav-map-btn:hover {
-    background: var(--muji-paper-dark) !important;
-    color: var(--muji-ink) !important;
-}
-
-
-/* =========================================================
-   24. WEATHER
-========================================================= */
-
-.weather-banner {
-    background: rgba(252, 250, 247, 0.88) !important;
-
-    color: var(--muji-ink) !important;
-
-    border: 1px solid var(--muji-line-light) !important;
-
-    box-shadow:
-        0 2px 9px var(--muji-shadow-small) !important;
-
-    backdrop-filter: none !important;
-}
-
-
-/* =========================================================
-   25. BADGES
-========================================================= */
-
-.badge-res {
-    background: var(--muji-red-soft) !important;
-
-    color: var(--muji-red) !important;
-
-    border: 0 !important;
-}
-
-
-/* =========================================================
-   26. RED / EMERGENCY
-========================================================= */
-
-.bg-red-50,
-.bg-red-100 {
-    background: var(--muji-red-soft) !important;
-}
-
-.text-red-900,
-.text-red-800,
-.text-red-700,
-.text-red-600,
-.text-red-500 {
-    color: var(--muji-red) !important;
-}
-
-.border-red-100,
-.border-red-200,
-.border-red-300 {
-    border-color: #E4CFC7 !important;
-}
-
-
-/* =========================================================
-   27. GREEN
-========================================================= */
-
-.bg-green-50,
-.bg-green-100,
-.bg-emerald-50,
-.bg-emerald-100 {
-    background: var(--muji-green-soft) !important;
-}
-
-.text-green-900,
-.text-green-800,
-.text-green-700,
-.text-green-600,
-.text-emerald-900,
-.text-emerald-800,
-.text-emerald-700,
-.text-emerald-600 {
-    color: var(--muji-green) !important;
-}
-
-.border-green-100,
-.border-green-200,
-.border-emerald-100,
-.border-emerald-200 {
-    border-color: #D5DACD !important;
-}
-
-
-/* =========================================================
-   28. AMBER / YELLOW
-========================================================= */
-
-.bg-amber-50,
-.bg-amber-100,
-.bg-yellow-50,
-.bg-yellow-100 {
-    background: var(--muji-sand-soft) !important;
-}
-
-.text-amber-900,
-.text-amber-800,
-.text-amber-700,
-.text-amber-600,
-.text-yellow-900,
-.text-yellow-800,
-.text-yellow-700,
-.text-yellow-600 {
-    color: var(--muji-sand) !important;
-}
-
-.border-amber-100,
-.border-amber-200,
-.border-yellow-100,
-.border-yellow-200 {
-    border-color: #DED4C4 !important;
-}
-
-
-/* =========================================================
-   29. DARK EXPENSE CARDS
-   原本 slate-900 / blue-950
-   → 深咖啡灰
-========================================================= */
-
-.bg-slate-900,
-.bg-slate-800,
-.bg-gray-900,
-.bg-gray-800 {
-    background: var(--muji-brown-dark) !important;
-
-    color: var(--muji-white) !important;
-}
-
-
-/* 原本深色漸層 */
-
-[class*="from-slate-900"],
-[class*="from-slate-800"],
-[class*="via-blue-950"],
-[class*="to-slate-800"],
-[class*="to-slate-900"] {
-    background-image: none !important;
-    background-color: var(--muji-brown-dark) !important;
-
-    color: var(--muji-white) !important;
-}
-
-
-/* 深色卡片裡的文字 */
-
-.bg-slate-900 *,
-.bg-slate-800 *,
-.bg-gray-900 *,
-.bg-gray-800 * {
-    color: inherit !important;
-}
-
-
-/* =========================================================
-   30. PROGRESS / ACCENT
-========================================================= */
-
-.bg-blue-400,
-.bg-blue-500 {
-    background-color: var(--muji-brown) !important;
-}
-
-.bg-emerald-400,
-.bg-emerald-500 {
-    background-color: var(--muji-green) !important;
-}
-
-
-/* =========================================================
-   31. LINKS
-========================================================= */
-
-a {
-    color: inherit;
-}
-
-
-/* 原本藍色連結 */
-
-a.text-blue-600,
-a.text-blue-700,
-a.text-blue-800 {
-    color: var(--muji-brown-dark) !important;
-}
-
-
-/* =========================================================
-   32. SCROLL AREA
-========================================================= */
-
-.no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
-
-/* =========================================================
-   33. BOTTOM NAV
-========================================================= */
-
-.bottom-nav {
-    background: rgba(252, 250, 247, 0.97) !important;
-
-    border-top:
-        1px solid var(--muji-line-light) !important;
-
-    box-shadow:
-        0 -3px 14px var(--muji-shadow-small) !important;
-
-    backdrop-filter:
-        blur(12px);
-}
-
-
-/* Bottom nav 文字 */
-
-.bottom-nav .text-blue-600,
-.bottom-nav .text-blue-700,
-.bottom-nav .text-indigo-600 {
-    color: var(--muji-brown-dark) !important;
-}
-
-
-/* Bottom nav active */
-
-.bottom-nav .nav-active {
-    background: var(--muji-brown-dark) !important;
-    color: var(--muji-white) !important;
-
-    transform: none !important;
-}
-
-
-/* active 內部 */
-
-.bottom-nav .nav-active * {
-    color: var(--muji-white) !important;
-}
-
-
-/* =========================================================
-   34. FIXED / STICKY
-========================================================= */
-
-.sticky {
-    border-color: var(--muji-line-light);
-}
-
-
-/* =========================================================
-   35. SELECTION
-========================================================= */
-
-::selection {
-    background: #DDD5CA;
-    color: var(--muji-ink);
-}
-
-
-/* =========================================================
-   36. MOBILE
-========================================================= */
-
-@media (max-width: 640px) {
-
-    body {
-        font-size: 15px;
-    }
-
-    #day-tabs > button {
-        min-width: 70px;
-        padding: 9px 13px;
-        border-radius: 11px !important;
-    }
-
-    .ticket-btn {
-        border-radius: 15px;
-    }
-
-    .tool-btn {
-        border-radius: 15px;
-    }
-}
-
-
-/* =========================================================
-   37. SAFE AREA
-========================================================= */
-
-@supports (padding: env(safe-area-inset-bottom)) {
-
-    body {
-        padding-bottom:
-            calc(90px + env(safe-area-inset-bottom));
-    }
-
-    .bottom-nav {
-        padding-bottom:
-            env(safe-area-inset-bottom);
-    }
-}
-
-
-/* =========================================================
-   38. FINAL MUJI CLEANUP
-========================================================= */
-
-/* 不允許背景重新變成純白 */
-
-body::before {
-    background: var(--muji-bg);
-}
-
-
-/* 移除不必要的 filter / gradient */
-
-header,
-.weather-banner,
-.ticket-btn,
-.tool-btn {
-    background-image: none !important;
-}
-
-
-/* 所有按鈕避免瀏覽器預設 outline 太突兀 */
-
-button:focus-visible {
-    outline:
-        2px solid rgba(117, 109, 99, 0.28);
-
-    outline-offset: 2px;
-}
-html {
     background-color: #F2EEE8 !important;
+
+    /* 預留底部固定導覽列空間 */
+    padding-bottom: calc(
+        110px + env(safe-area-inset-bottom, 0px)
+    ) !important;
+
+    overscroll-behavior-x: none !important;
+    overscroll-behavior-y: none !important;
 }
 
-body {
-    background-color: #F2EEE8 !important;
-}
 
-/* 最外層頁面 */
+/* ---------- 2. 最外層容器 ---------- */
+
 body > div,
 #root,
-#app,
-.min-h-screen {
+#app {
+    min-height: 100% !important;
+    height: auto !important;
     background-color: #F2EEE8 !important;
 }
 
-/* 主內容區 */
+
+/* ---------- 3. 主內容區 ---------- */
+
 main {
+    min-height: auto !important;
+    height: auto !important;
+
     background-color: #F2EEE8 !important;
+
+    overflow-x: hidden !important;
 }
 
-/* Tailwind 原本的淺灰背景 */
-.bg-slate-50,
-.bg-gray-50 {
-    background-color: #F2EEE8 !important;
-}
 
-/* 卡片維持紙張白 */
+/* ---------- 4. 卡片維持紙張白 ---------- */
+
 .bg-white {
     background-color: #FCFAF7 !important;
 }
 
-/* =========================================================
-   END
-   MUJI OKINAWA V3
-========================================================= */
+
+/* ---------- 5. 防止內容區被固定導覽列蓋住 ---------- */
+
+main {
+    padding-bottom: 15px;
+}
+
+
+/* ---------- 6. 底部固定導覽列 ---------- */
+
+.bottom-nav {
+    position: fixed !important;
+
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    width: 100% !important;
+
+    min-height: 95px !important;
+    height: auto !important;
+
+    z-index: 1000 !important;
+
+    box-sizing: border-box !important;
+
+    background: rgba(252, 250, 247, 0.98) !important;
+
+    border-top: 1px solid #E5DED5 !important;
+
+    box-shadow:
+        0 -3px 14px rgba(67, 59, 50, 0.06) !important;
+
+    isolation: isolate;
+
+    padding-bottom:
+        env(safe-area-inset-bottom, 0px) !important;
+}
+
+
+/* ---------- 7. 底部導覽列內部不要被拉高 ---------- */
+
+.bottom-nav > * {
+    box-sizing: border-box !important;
+}
+
+
+/* ---------- 8. Header ---------- */
+
+header {
+    position: sticky !important;
+    top: 0 !important;
+
+    z-index: 100 !important;
+
+    isolation: isolate;
+
+    background: #FCFAF7 !important;
+}
+
+
+/* ---------- 9. Tab 顯示控制 ---------- */
+/* 非 active 的頁面完全隱藏 */
+
+.tab-content {
+    display: none !important;
+}
+
+.tab-content.active {
+    display: block !important;
+    opacity: 1 !important;
+}
+
+
+/* ---------- 10. 避免橫向溢出 ---------- */
+
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+
+    overflow-x: hidden !important;
+}
+
+main {
+    width: 100%;
+    max-width: 100%;
+
+    overflow-x: hidden !important;
+}
+
+
+/* ---------- 11. 手機版 ---------- */
+
+@media (max-width: 768px) {
+
+    html {
+        width: 100%;
+        max-width: 100%;
+
+        overflow-x: hidden !important;
+
+        background-color: #F2EEE8 !important;
+    }
+
+    body {
+        width: 100%;
+        max-width: 100%;
+
+        min-height: 100vh !important;
+
+        background-color: #F2EEE8 !important;
+
+        /*
+         * 95px 導覽列
+         * + 15px 緩衝
+         */
+        padding-bottom:
+            calc(
+                110px + env(safe-area-inset-bottom, 0px)
+            ) !important;
+    }
+
+    main {
+        width: 100%;
+        max-width: 100%;
+
+        min-height: auto !important;
+
+        padding-bottom: 15px !important;
+
+        background-color: #F2EEE8 !important;
+    }
+
+    .bottom-nav {
+        width: 100% !important;
+
+        min-height: 95px !important;
+
+        padding-bottom:
+            env(safe-area-inset-bottom, 0px) !important;
+    }
+}
+
+
+/* ---------- 12. iPhone 安全區 ---------- */
+
+@supports (padding: max(0px)) {
+
+    body {
+        padding-bottom:
+            max(
+                110px,
+                calc(
+                    95px +
+                    env(safe-area-inset-bottom, 0px)
+                )
+            ) !important;
+    }
+
+    .bottom-nav {
+        padding-bottom:
+            env(safe-area-inset-bottom, 0px) !important;
+    }
+}
