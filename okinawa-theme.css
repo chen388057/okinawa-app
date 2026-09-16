@@ -1,363 +1,102 @@
 ```css
 /* 🌺 沖繩隨身助手｜沖繩日雜海島風 */
 
-:root {
-  --paper: #F4F1EE;
-  --card: #FFFFFF;
-  --card-soft: #F8F7F5;
-  --white: #FFFFFF;
-
-  --text: #333333;
-  --text-soft: #8A8781;
-  --line: #EAE6E2;
-
-  /* 沖繩海水藍 */
-  --sea: #78AEB3;
-  --sea-dark: #557F84;
-  --sea-soft: #E8F1F1;
-  --sea-line: #D2E3E4;
-
-  /* 柔和橄欖綠 */
-  --olive: #AEB6A0;
-  --olive-dark: #6F7965;
-  --olive-soft: #E9EDE4;
-
-  /* 沙灘色 */
-  --sand: #E9DCCB;
-  --sand-soft: #F5EEE5;
-
-  /* 少量珊瑚橘 */
-  --coral: #C9826D;
-  --coral-soft: #F5E6DE;
-
-  --shadow: rgba(0, 0, 0, 0.05);
-}
-
-
-/* ================================
-   基本頁面
-================================ */
-
+html,
 body {
-  background-color: var(--paper) !important;
-  color: var(--text) !important;
+  background: #F4F1EE !important;
+  color: #333333 !important;
 }
 
-
-/* ================================
-   Header
-================================ */
-
-header {
-  background: var(--sea) !important;
-  color: #FFFFFF !important;
-  box-shadow: 0 2px 8px var(--shadow) !important;
-}
-
-header .text-white {
-  color: #FFFFFF !important;
-}
-
-header .text-slate-500,
-header .text-slate-600,
-header .text-slate-700,
-header .text-slate-800,
-header .text-slate-900 {
-  color: #FFFFFF !important;
-}
-
-
-/* ================================
-   卡片 / 背景
-================================ */
-
-.bg-white {
-  background-color: var(--card) !important;
-}
-
-.bg-slate-50 {
-  background-color: var(--paper) !important;
-}
-
-.bg-slate-100 {
-  background-color: var(--card-soft) !important;
-}
-
-
-/* ================================
-   邊框
-================================ */
-
-.border,
+/* 所有常見黑色邊框全部取消 */
 .border-black,
+.border-gray-900,
+.border-slate-900,
+.border-gray-800,
+.border-slate-800 {
+  border-color: transparent !important;
+}
+
+/* 一般卡片只保留非常淡的灰色邊線 */
+.border,
 .border-slate-100,
 .border-slate-200,
 .border-slate-300 {
-  border-color: var(--line) !important;
-  border-width: 1px !important;
+  border-color: #EAE6E2 !important;
 }
 
-.border-black {
-  border-color: transparent !important;
+/* 任何明顯的黑色 outline 都取消 */
+*:focus {
+  outline-color: transparent !important;
 }
 
-.rounded-xl,
-.rounded-2xl,
-.rounded-3xl {
-  border-color: var(--line) !important;
-}
-
-
-/* ================================
-   文字
-================================ */
-
-.text-slate-900,
-.text-slate-800 {
-  color: var(--text) !important;
-}
-
-.text-slate-700,
-.text-slate-600 {
-  color: #5F5D58 !important;
-}
-
-.text-slate-500,
-.text-slate-400 {
-  color: var(--text-soft) !important;
-}
-
-
-/* ================================
-   沖繩海水藍
-================================ */
-
-.bg-blue-600,
-.bg-blue-700,
-.bg-sky-600,
-.bg-indigo-600,
-.hover\:bg-blue-700:hover {
-  background-color: var(--sea) !important;
-  color: #FFFFFF !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
-
-.bg-blue-600 *,
-.bg-blue-700 *,
-.bg-sky-600 *,
-.bg-indigo-600 * {
-  color: #FFFFFF !important;
-}
-
-
-/* ================================
-   藍色文字
-================================ */
-
-.text-blue-600,
-.text-blue-700,
-.text-blue-800,
-.text-blue-900,
-.text-indigo-600,
-.text-indigo-700 {
-  color: var(--sea-dark) !important;
-}
-
-
-/* ================================
-   淡藍色區塊
-================================ */
-
-.bg-blue-50,
-.bg-blue-50\/80,
-.bg-sky-50 {
-  background-color: var(--sea-soft) !important;
-}
-
-.border-blue-100,
-.border-blue-200 {
-  border-color: var(--sea-line) !important;
-}
-
-
-/* ================================
-   行程日期按鈕
-================================ */
-
-.ledger-day-btn {
-  background-color: transparent !important;
-  color: #77746E !important;
-  border: 1px solid transparent !important;
-  box-shadow: none !important;
-}
-
-.ledger-day-btn.bg-blue-600,
-.ledger-day-btn.active {
-  background-color: var(--sea-soft) !important;
-  color: var(--sea-dark) !important;
-  border: 1px solid var(--sea-line) !important;
-  font-weight: 700 !important;
-}
-
-
-/* ================================
-   淡藍提示區
-================================ */
-
-.bg-blue-100,
-.bg-sky-100 {
-  background-color: var(--sea-soft) !important;
-}
-
-.text-blue-800,
-.text-sky-800 {
-  color: var(--sea-dark) !important;
-}
-
-
-/* ================================
-   行程時間軸
-================================ */
-
-.timeline-container::before {
-  background-color: #D8D5D0 !important;
-}
-
-
-/* ================================
-   輸入框
-================================ */
-
-input,
-select,
-textarea {
+/* 卡片不要黑框 */
+.bg-white {
   background-color: #FFFFFF !important;
-  color: var(--text) !important;
-  border: 1px solid #DEDAD5 !important;
-  box-shadow: none !important;
+  border-color: #EAE6E2 !important;
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: #AAA69F !important;
+/* 米灰色區域 */
+.bg-slate-50 {
+  background-color: #F4F1EE !important;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--sea) !important;
-  outline: none !important;
-  box-shadow: 0 0 0 2px rgba(120, 174, 179, 0.20) !important;
+.bg-slate-100 {
+  background-color: #F8F7F5 !important;
 }
 
-select option {
-  background-color: #FFFFFF !important;
-  color: var(--text) !important;
-}
-
-
-/* ================================
-   沙灘色 / 黃色提示
-================================ */
-
-.bg-yellow-50,
-.bg-amber-50 {
-  background-color: var(--sand-soft) !important;
-}
-
-
-/* ================================
-   珊瑚色
-================================ */
-
-.text-amber-600,
-.text-orange-600 {
-  color: var(--coral) !important;
-}
-
-.bg-orange-50 {
-  background-color: var(--coral-soft) !important;
-}
-
-
-/* ================================
-   橄欖綠
-================================ */
-
-.bg-green-50,
-.bg-emerald-50 {
-  background-color: var(--olive-soft) !important;
-}
-
-.text-green-600,
-.text-emerald-600 {
-  color: var(--olive-dark) !important;
-}
-
-
-/* ================================
-   深色區塊
-================================ */
-
+/* 深色背景只保留在真正需要的區塊 */
 .bg-slate-900,
 .bg-slate-800,
 .bg-blue-950 {
   background-color: #68777A !important;
+  border-color: transparent !important;
   color: #FFFFFF !important;
 }
 
-.bg-slate-900 *,
-.bg-slate-800 *,
-.bg-blue-950 * {
-  color: #FFFFFF !important;
+/* 移除所有常見黑色背景 */
+.bg-black {
+  background-color: transparent !important;
 }
 
+/* 黑色文字不要變成黑色粗框 */
+.text-black {
+  color: #333333 !important;
+}
 
-/* ================================
-   陰影
-================================ */
-
+/* 所有卡片陰影改成非常淡 */
+.shadow,
+.shadow-sm,
 .shadow-md,
 .shadow-lg,
-.shadow-xl {
-  box-shadow: 0 3px 10px var(--shadow) !important;
+.shadow-xl,
+.shadow-2xl {
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.045) !important;
 }
 
-
-/* ================================
-   分隔線
-================================ */
-
-hr {
-  border-color: var(--line) !important;
+/* 輸入框保持乾淨 */
+input,
+select,
+textarea {
+  border-color: #DEDAD5 !important;
+  background: #FFFFFF !important;
 }
 
-.border-slate-900,
-.border-gray-900 {
-  border-color: var(--line) !important;
+/* 按鈕不要黑框 */
+button {
+  border-color: transparent !important;
 }
 
+/* 日期按鈕 */
+.ledger-day-btn {
+  border-color: transparent !important;
+}
 
-/* ================================
-   連結
-================================ */
+.ledger-day-btn.active,
+.ledger-day-btn.bg-blue-600 {
+  border-color: #D2E3E4 !important;
+}
 
+/* 連結 */
 a {
-  color: var(--sea-dark);
+  text-decoration-color: transparent;
 }
-
-a:hover {
-  color: #3F6970;
-}
-
-
-/* ================================
-   選取文字
-================================ */
-
-::selection {
-  background-color: #DCEBEC;
-  color: #333333;
-}
-```
