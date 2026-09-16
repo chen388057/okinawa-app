@@ -2,206 +2,195 @@
 /* 🌺 沖繩隨身助手｜沖繩日雜海島風 */
 
 :root {
-  --okinawa-cream: #FFF9EF;
-  --okinawa-white: #FFFEFB;
-  --okinawa-sea: #6FA8A8;
-  --okinawa-sea-dark: #4F8587;
-  --okinawa-mint: #A9C8B8;
-  --okinawa-sand: #E9D8BC;
-  --okinawa-coral: #E89B72;
-  --okinawa-coral-light: #F9E5D9;
-  --okinawa-text: #454640;
-  --okinawa-subtext: #77786F;
-  --okinawa-line: #E8DFD2;
+  --muji-bg: #F2F0EA;
+  --muji-card: #FAF9F5;
+  --muji-white: #FFFFFF;
+  --muji-olive: #858B70;
+  --muji-olive-light: #E7E7DC;
+  --muji-brown: #A18F7B;
+  --muji-text: #4C4B43;
+  --muji-subtext: #85837A;
+  --muji-line: #DAD8CF;
+  --muji-orange: #B98A68;
 }
 
-/* ===== 整體 ===== */
+/* 整體背景 */
 
 body {
-  background: var(--okinawa-cream) !important;
-  color: var(--okinawa-text) !important;
+  background-color: var(--muji-bg) !important;
+  color: var(--muji-text) !important;
 }
 
-/* ===== 頂部：沖繩海水藍 × 薄荷綠 ===== */
+/* 頂部：單色灰橄欖綠，不使用漸層 */
 
 header {
-  background: linear-gradient(
-    135deg,
-    #5F999D 0%,
-    #72AAA8 50%,
-    #91BDAA 100%
-  ) !important;
+  background: #D8D8C8 !important;
+  color: var(--muji-text) !important;
+  box-shadow: none !important;
 }
 
-/* ===== 白色卡片 ===== */
+/* Header 裡原本的白色文字改成暖深灰 */
+
+header .text-white {
+  color: var(--muji-text) !important;
+}
+
+/* 卡片 */
 
 .bg-white {
-  background-color: var(--okinawa-white) !important;
+  background-color: var(--muji-card) !important;
 }
 
-/* ===== 背景區塊 ===== */
+/* 頁面區塊 */
 
 .bg-slate-50 {
-  background-color: #F7F1E7 !important;
+  background-color: #F2F0EA !important;
 }
 
 .bg-slate-100 {
-  background-color: #EEE7DA !important;
+  background-color: #E7E5DD !important;
 }
 
-/* ===== 文字 ===== */
+/* 文字 */
 
-.text-slate-800,
-.text-slate-900 {
-  color: var(--okinawa-text) !important;
+.text-slate-900,
+.text-slate-800 {
+  color: var(--muji-text) !important;
 }
 
 .text-slate-700,
 .text-slate-600 {
-  color: #666860 !important;
+  color: #68675F !important;
 }
 
 .text-slate-500,
 .text-slate-400 {
-  color: var(--okinawa-subtext) !important;
+  color: var(--muji-subtext) !important;
 }
 
-/* ===== 邊框 ===== */
+/* 邊框 */
 
 .border-slate-100,
 .border-slate-200 {
-  border-color: var(--okinawa-line) !important;
+  border-color: var(--muji-line) !important;
 }
 
-/* ===== 主按鈕：海水藍 ===== */
+/* 所有主要藍色改成低彩度橄欖綠 */
 
 .bg-blue-600,
 .bg-blue-700,
+.bg-sky-600,
+.bg-indigo-600,
 .hover\:bg-blue-700:hover {
-  background-color: var(--okinawa-sea) !important;
+  background-color: var(--muji-olive) !important;
+  color: #FFFFFF !important;
 }
 
 .text-blue-600,
 .text-blue-700,
 .text-blue-800,
 .text-blue-900 {
-  color: var(--okinawa-sea-dark) !important;
+  color: #70765D !important;
 }
 
-/* ===== 淡藍區塊 → 淡薄荷綠 ===== */
+/* 淡藍色區塊改成無印灰綠 */
 
 .bg-blue-50,
 .bg-blue-50\/80 {
-  background-color: #E6F0EB !important;
+  background-color: var(--muji-olive-light) !important;
 }
 
 .border-blue-100 {
-  border-color: #C8DDD2 !important;
+  border-color: #D1D2C4 !important;
 }
 
-/* ===== Sky / Indigo → 沖繩海藍 ===== */
+/* DAY 按鈕 */
 
-.bg-sky-600,
-.bg-indigo-600 {
-  background-color: var(--okinawa-sea) !important;
+.ledger-day-btn {
+  background-color: #E7E5DD !important;
+  color: #68675F !important;
+  border-color: transparent !important;
 }
-
-/* ===== Focus ===== */
-
-.focus\:ring-blue-500:focus {
-  --tw-ring-color: #9BC3BE !important;
-}
-
-/* ===== 時間軸 ===== */
-
-.timeline-container::before {
-  background: #D8D8CD !important;
-}
-
-/* ===== DAY 選擇按鈕 ===== */
 
 .ledger-day-btn.bg-blue-600 {
-  background-color: var(--okinawa-sea) !important;
+  background-color: var(--muji-olive) !important;
+  color: #FFFFFF !important;
 }
 
-/* ===== 橘色：珊瑚色，只拿來當亮點 ===== */
+/* 時間軸 */
 
-.text-orange-600,
-.text-amber-600 {
-  color: #D87850 !important;
+.timeline-container::before {
+  background: #D6D4CA !important;
 }
 
-.bg-orange-50 {
-  background-color: var(--okinawa-coral-light) !important;
+/* 時間標籤 */
+
+.bg-blue-100,
+.bg-sky-100 {
+  background-color: #E4E5DA !important;
 }
 
-/* ===== 沙灘色小區塊 ===== */
-
-.bg-yellow-50 {
-  background-color: #F8F0DF !important;
+.text-blue-800,
+.text-sky-800 {
+  color: #656B55 !important;
 }
 
-/* ===== 深色統計卡片 ===== */
-
-.bg-slate-900,
-.bg-slate-800,
-.bg-blue-950 {
-  background-color: #505852 !important;
-}
-
-/* ===== 輸入框 ===== */
+/* 輸入框與下拉選單 */
 
 input,
 select,
-textarea {
-  color: var(--okinawa-text);
-}
-
-/* ===== 勾選／選取 ===== */
-
-.text-blue-600 {
-  color: var(--okinawa-sea-dark) !important;
-}
-
-/* ===== 選取文字 ===== */
-
-::selection {
-  background: #D7E9E1;
-  color: #3F504C;
-}
-body {
-  background: #FFF9EF !important;
-}
-
-header {
-  background: #6FA8A8 !important;
-}
-
-.bg-white {
-  background: #FFFEFB !important;
-}
-select,
-input,
 textarea {
   background-color: #FFFFFF !important;
-  color: #454640 !important;
-  border-color: #DCD6CA !important;
+  color: var(--muji-text) !important;
+  border-color: var(--muji-line) !important;
 }
 
 select option {
   background-color: #FFFFFF !important;
-  color: #454640 !important;
+  color: var(--muji-text) !important;
 }
 
-button {
-  color: inherit;
+.focus\:ring-blue-500:focus {
+  --tw-ring-color: #B8BBA8 !important;
 }
 
-/* 白色文字的彩色按鈕維持白色 */
-.bg-blue-600,
-.bg-blue-700,
-.bg-sky-600,
-.bg-indigo-600 {
+/* 深色統計卡片改成暖灰褐色 */
+
+.bg-slate-900,
+.bg-slate-800,
+.bg-blue-950 {
+  background-color: #66675E !important;
   color: #FFFFFF !important;
+}
+
+/* 少量陶土色重點 */
+
+.text-orange-600,
+.text-amber-600 {
+  color: var(--muji-orange) !important;
+}
+
+.bg-orange-50,
+.bg-yellow-50 {
+  background-color: #F1E8DD !important;
+}
+
+/* 移除過重的陰影與黑色外框 */
+
+.shadow-md,
+.shadow-lg,
+.shadow-xl {
+  box-shadow: 0 1px 5px rgba(80, 77, 68, 0.06) !important;
+}
+
+.border-black {
+  border-color: var(--muji-line) !important;
+}
+
+/* 選取文字 */
+
+::selection {
+  background: #D9DDCD;
+  color: #4C4B43;
 }
 ```
