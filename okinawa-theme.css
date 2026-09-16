@@ -1081,7 +1081,37 @@ button:focus-visible {
 
     outline-offset: 2px;
 }
+html {
+    background-color: #F2EEE8 !important;
+}
 
+body {
+    background-color: #F2EEE8 !important;
+}
+
+/* 最外層頁面 */
+body > div,
+#root,
+#app,
+.min-h-screen {
+    background-color: #F2EEE8 !important;
+}
+
+/* 主內容區 */
+main {
+    background-color: #F2EEE8 !important;
+}
+
+/* Tailwind 原本的淺灰背景 */
+.bg-slate-50,
+.bg-gray-50 {
+    background-color: #F2EEE8 !important;
+}
+
+/* 卡片維持紙張白 */
+.bg-white {
+    background-color: #FCFAF7 !important;
+}
 
 /* =========================================================
    END
