@@ -1,220 +1,313 @@
 ```css
 /* 🌺 沖繩隨身助手｜沖繩日雜海島風 */
 
-html {
-    min-height: 100%;
-    background-color: #F2EEE8 !important;
-    overscroll-behavior-y: none !important;
-}
+:root {
+    --muji-bg: #F2EEE8;
+    --muji-paper: #FCFAF7;
+    --muji-paper-soft: #F6F1EB;
 
-body {
-    min-height: 100%;
-    height: auto !important;
-    margin: 0 !important;
+    --muji-ink: #4F4942;
+    --muji-ink-soft: #6B635A;
+    --muji-muted: #8A8177;
 
-    background-color: #F2EEE8 !important;
+    /* 奶茶 / 裸色 */
+    --muji-milk-tea: #B79F8A;
+    --muji-milk-tea-dark: #9D866F;
+    --muji-milk-tea-light: #E8DED2;
 
-    /* 預留底部固定導覽列空間 */
-    padding-bottom: calc(
-        110px + env(safe-area-inset-bottom, 0px)
-    ) !important;
+    /* 柔和米杏色 */
+    --muji-nude: #D8C8B8;
+    --muji-nude-light: #F1E9E1;
 
-    overscroll-behavior-x: none !important;
-    overscroll-behavior-y: none !important;
-}
+    --muji-line: #DDD4CA;
 
-
-/* ---------- 2. 最外層容器 ---------- */
-
-body > div,
-#root,
-#app {
-    min-height: 100% !important;
-    height: auto !important;
-    background-color: #F2EEE8 !important;
+    /* 柔和紅棕，只拿來做少量提醒 */
+    --muji-red: #9B6252;
+    --muji-red-soft: #F1E4DE;
 }
 
 
-/* ---------- 3. 主內容區 ---------- */
-
-main {
-    min-height: auto !important;
-    height: auto !important;
-
-    background-color: #F2EEE8 !important;
-
-    overflow-x: hidden !important;
-}
-
-
-/* ---------- 4. 卡片維持紙張白 ---------- */
-
-.bg-white {
-    background-color: #FCFAF7 !important;
-}
-
-
-/* ---------- 5. 防止內容區被固定導覽列蓋住 ---------- */
-
-main {
-    padding-bottom: 15px;
-}
-
-
-/* ---------- 6. 底部固定導覽列 ---------- */
-
-.bottom-nav {
-    position: fixed !important;
-
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-
-    width: 100% !important;
-
-    min-height: 95px !important;
-    height: auto !important;
-
-    z-index: 1000 !important;
-
-    box-sizing: border-box !important;
-
-    background: rgba(252, 250, 247, 0.98) !important;
-
-    border-top: 1px solid #E5DED5 !important;
-
-    box-shadow:
-        0 -3px 14px rgba(67, 59, 50, 0.06) !important;
-
-    isolation: isolate;
-
-    padding-bottom:
-        env(safe-area-inset-bottom, 0px) !important;
-}
-
-
-/* ---------- 7. 底部導覽列內部不要被拉高 ---------- */
-
-.bottom-nav > * {
-    box-sizing: border-box !important;
-}
-
-
-/* ---------- 8. Header ---------- */
-
-header {
-    position: sticky !important;
-    top: 0 !important;
-
-    z-index: 100 !important;
-
-    isolation: isolate;
-
-    background: #FCFAF7 !important;
-}
-
-
-/* ---------- 9. Tab 顯示控制 ---------- */
-/* 非 active 的頁面完全隱藏 */
-
-.tab-content {
-    display: none !important;
-}
-
-.tab-content.active {
-    display: block !important;
-    opacity: 1 !important;
-}
-
-
-/* ---------- 10. 避免橫向溢出 ---------- */
+/* =========================================================
+   1. 整體背景
+========================================================= */
 
 html,
 body {
-    width: 100%;
-    max-width: 100%;
-
-    overflow-x: hidden !important;
-}
-
-main {
-    width: 100%;
-    max-width: 100%;
-
-    overflow-x: hidden !important;
+    background-color: var(--muji-bg) !important;
+    color: var(--muji-ink) !important;
 }
 
 
-/* ---------- 11. 手機版 ---------- */
+/* =========================================================
+   2. 原本藍色的主要按鈕
+   Tailwind blue / indigo → 奶茶裸色
+========================================================= */
 
-@media (max-width: 768px) {
-
-    html {
-        width: 100%;
-        max-width: 100%;
-
-        overflow-x: hidden !important;
-
-        background-color: #F2EEE8 !important;
-    }
-
-    body {
-        width: 100%;
-        max-width: 100%;
-
-        min-height: 100vh !important;
-
-        background-color: #F2EEE8 !important;
-
-        /*
-         * 95px 導覽列
-         * + 15px 緩衝
-         */
-        padding-bottom:
-            calc(
-                110px + env(safe-area-inset-bottom, 0px)
-            ) !important;
-    }
-
-    main {
-        width: 100%;
-        max-width: 100%;
-
-        min-height: auto !important;
-
-        padding-bottom: 15px !important;
-
-        background-color: #F2EEE8 !important;
-    }
-
-    .bottom-nav {
-        width: 100% !important;
-
-        min-height: 95px !important;
-
-        padding-bottom:
-            env(safe-area-inset-bottom, 0px) !important;
-    }
+.bg-blue-600,
+.bg-blue-700,
+.bg-indigo-600,
+.bg-indigo-700 {
+    background-color: var(--muji-milk-tea) !important;
+    color: #FFFFFF !important;
+    border-color: var(--muji-milk-tea) !important;
 }
 
 
-/* ---------- 12. iPhone 安全區 ---------- */
+/* hover */
 
-@supports (padding: max(0px)) {
+.hover\:bg-blue-700:hover,
+.hover\:bg-indigo-700:hover {
+    background-color: var(--muji-milk-tea-dark) !important;
+}
 
-    body {
-        padding-bottom:
-            max(
-                110px,
-                calc(
-                    95px +
-                    env(safe-area-inset-bottom, 0px)
-                )
-            ) !important;
-    }
 
-    .bottom-nav {
-        padding-bottom:
-            env(safe-area-inset-bottom, 0px) !important;
-    }
+/* 按鈕裡面的文字 / icon */
+
+.bg-blue-600 *,
+.bg-blue-700 *,
+.bg-indigo-600 *,
+.bg-indigo-700 * {
+    color: #FFFFFF !important;
+}
+
+
+/* =========================================================
+   3. 淺藍色區塊 → 淺奶茶
+========================================================= */
+
+.bg-blue-50,
+.bg-blue-50\/80,
+.bg-indigo-50 {
+    background-color: var(--muji-nude-light) !important;
+}
+
+
+/* =========================================================
+   4. 藍色邊框 → 米棕色
+========================================================= */
+
+.border-blue-100,
+.border-blue-200,
+.border-blue-300,
+.border-indigo-100,
+.border-indigo-200 {
+    border-color: var(--muji-milk-tea-light) !important;
+}
+
+
+/* =========================================================
+   5. 藍色文字 → 深咖啡
+========================================================= */
+
+.text-blue-500,
+.text-blue-600,
+.text-blue-700,
+.text-blue-800,
+.text-indigo-500,
+.text-indigo-600,
+.text-indigo-700,
+.text-indigo-800 {
+    color: var(--muji-ink-soft) !important;
+}
+
+
+/* =========================================================
+   6. 上方日期 / DAY 按鈕
+========================================================= */
+
+#day-tabs > button {
+    background-color: var(--muji-paper-soft) !important;
+    color: var(--muji-ink-soft) !important;
+
+    border: 1px solid var(--muji-line) !important;
+}
+
+
+/* 被選取的 DAY */
+
+#day-tabs > button.bg-blue-600,
+#day-tabs > button.bg-blue-700,
+#day-tabs > button.bg-indigo-600,
+#day-tabs > button.bg-indigo-700 {
+    background-color: var(--muji-milk-tea-dark) !important;
+    color: #FFFFFF !important;
+
+    border-color: var(--muji-milk-tea-dark) !important;
+}
+
+
+/* 選取按鈕裡面的文字 */
+
+#day-tabs > button.bg-blue-600 *,
+#day-tabs > button.bg-blue-700 *,
+#day-tabs > button.bg-indigo-600 *,
+#day-tabs > button.bg-indigo-700 * {
+    color: #FFFFFF !important;
+}
+
+
+/* =========================================================
+   7. 上方欄位 / 標題文字
+   防止白底＋白字看不到
+========================================================= */
+
+header {
+    background: var(--muji-paper) !important;
+    color: var(--muji-ink) !important;
+
+    border-bottom: 1px solid var(--muji-line) !important;
+}
+
+
+/* header 裡面的文字全部確保有對比 */
+
+header .text-white {
+    color: var(--muji-ink) !important;
+}
+
+
+/* header 裡原本的藍色文字 */
+
+header .text-blue-500,
+header .text-blue-600,
+header .text-blue-700 {
+    color: var(--muji-ink) !important;
+}
+
+
+/* =========================================================
+   8. 卡片
+========================================================= */
+
+.bg-white {
+    background-color: var(--muji-paper) !important;
+}
+
+
+/* 卡片邊框 */
+
+.border-slate-100,
+.border-slate-200,
+.border-gray-100,
+.border-gray-200 {
+    border-color: var(--muji-line) !important;
+}
+
+
+/* =========================================================
+   9. 原本灰色文字 → 溫暖咖啡灰
+========================================================= */
+
+.text-slate-500,
+.text-slate-600,
+.text-gray-500,
+.text-gray-600 {
+    color: var(--muji-ink-soft) !important;
+}
+
+.text-slate-400,
+.text-gray-400 {
+    color: var(--muji-muted) !important;
+}
+
+
+/* =========================================================
+   10. 新增景點 / 提醒區
+========================================================= */
+
+.bg-blue-50\/80 {
+    background-color: var(--muji-nude-light) !important;
+}
+
+.border-blue-100 {
+    border-color: var(--muji-milk-tea-light) !important;
+}
+
+
+/* =========================================================
+   11. Ledger / 記帳 DAY 按鈕
+========================================================= */
+
+.ledger-day-btn {
+    background-color: var(--muji-paper-soft) !important;
+    color: var(--muji-ink-soft) !important;
+
+    border: 1px solid var(--muji-line) !important;
+}
+
+
+/* 全部 / 選取中的按鈕 */
+
+.ledger-day-btn.bg-blue-600,
+.ledger-day-btn.bg-blue-700 {
+    background-color: var(--muji-milk-tea) !important;
+    color: #FFFFFF !important;
+
+    border-color: var(--muji-milk-tea) !important;
+}
+
+
+/* =========================================================
+   12. Bottom Navigation
+========================================================= */
+
+.bottom-nav {
+    background: rgba(252, 250, 247, 0.98) !important;
+
+    border-top: 1px solid var(--muji-line) !important;
+
+    color: var(--muji-ink) !important;
+}
+
+
+/* 底部導覽被選取 */
+
+.bottom-nav .bg-blue-600,
+.bottom-nav .bg-blue-700,
+.bottom-nav .bg-indigo-600,
+.bottom-nav .bg-indigo-700 {
+    background-color: var(--muji-milk-tea) !important;
+    color: #FFFFFF !important;
+}
+
+
+/* bottom nav 裡的藍色文字 */
+
+.bottom-nav .text-blue-500,
+.bottom-nav .text-blue-600,
+.bottom-nav .text-blue-700 {
+    color: var(--muji-milk-tea-dark) !important;
+}
+
+
+/* =========================================================
+   13. Timeline 線條
+========================================================= */
+
+.timeline-container::before {
+    background: #D8D0C7 !important;
+}
+
+
+/* =========================================================
+   14. 連結 / 可點擊文字
+========================================================= */
+
+a.text-blue-600,
+a.text-blue-700 {
+    color: var(--muji-milk-tea-dark) !important;
+}
+
+
+/* =========================================================
+   15. 避免白色文字在米白背景上消失
+========================================================= */
+
+main .text-white:not(
+    .bg-blue-600 *,
+    .bg-blue-700 *,
+    .bg-indigo-600 *,
+    .bg-indigo-700 *
+) {
+    color: var(--muji-ink) !important;
 }
