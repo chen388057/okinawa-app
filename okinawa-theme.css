@@ -2,195 +2,255 @@
 /* 🌺 沖繩隨身助手｜沖繩日雜海島風 */
 
 :root {
-  --muji-bg: #F2F0EA;
-  --muji-card: #FAF9F5;
-  --muji-white: #FFFFFF;
-  --muji-olive: #858B70;
-  --muji-olive-light: #E7E7DC;
-  --muji-brown: #A18F7B;
-  --muji-text: #4C4B43;
-  --muji-subtext: #85837A;
-  --muji-line: #DAD8CF;
-  --muji-orange: #B98A68;
+  --paper: #F6F3EC;
+  --card: #FCFBF7;
+  --card-soft: #F1EEE6;
+
+  --text: #4B4A45;
+  --text-soft: #858178;
+  --line: #E7E2D8;
+
+  --sage: #AAB39A;
+  --sage-dark: #69765F;
+  --sage-soft: #E5EBDD;
+
+  --sand: #E8D9C5;
+  --coral: #C98B70;
+  --coral-soft: #F3E4DA;
+
+  --shadow: rgba(91, 84, 70, 0.055);
 }
 
-/* 整體背景 */
+/* ===== 頁面整體 ===== */
 
 body {
-  background-color: var(--muji-bg) !important;
-  color: var(--muji-text) !important;
+  background: var(--paper) !important;
+  color: var(--text) !important;
 }
 
-/* 頂部：單色灰橄欖綠，不使用漸層 */
+/* ===== Header：暖米灰，不使用漸層 ===== */
 
 header {
-  background: #D8D8C8 !important;
-  color: var(--muji-text) !important;
-  box-shadow: none !important;
+  background: #DCD9CE !important;
+  color: var(--text) !important;
+  box-shadow: 0 1px 5px var(--shadow) !important;
 }
-
-/* Header 裡原本的白色文字改成暖深灰 */
 
 header .text-white {
-  color: var(--muji-text) !important;
+  color: var(--text) !important;
 }
 
-/* 卡片 */
+/* ===== 卡片：取消厚重外框 ===== */
 
 .bg-white {
-  background-color: var(--muji-card) !important;
+  background: var(--card) !important;
 }
 
-/* 頁面區塊 */
+.border,
+.border-black,
+.border-slate-100,
+.border-slate-200 {
+  border-color: var(--line) !important;
+  border-width: 1px !important;
+}
+
+/* 讓主要內容卡片不要有黑色輪廓 */
+
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl {
+  border-color: var(--line) !important;
+}
+
+/* ===== 背景區塊 ===== */
 
 .bg-slate-50 {
-  background-color: #F2F0EA !important;
+  background: var(--paper) !important;
 }
 
 .bg-slate-100 {
-  background-color: #E7E5DD !important;
+  background: var(--card-soft) !important;
 }
 
-/* 文字 */
+/* ===== 文字 ===== */
 
 .text-slate-900,
 .text-slate-800 {
-  color: var(--muji-text) !important;
+  color: var(--text) !important;
 }
 
 .text-slate-700,
 .text-slate-600 {
-  color: #68675F !important;
+  color: #66645D !important;
 }
 
 .text-slate-500,
 .text-slate-400 {
-  color: var(--muji-subtext) !important;
+  color: var(--text-soft) !important;
 }
 
-/* 邊框 */
-
-.border-slate-100,
-.border-slate-200 {
-  border-color: var(--muji-line) !important;
-}
-
-/* 所有主要藍色改成低彩度橄欖綠 */
+/* ===== 主要按鈕：淡橄欖綠＋深色文字 ===== */
 
 .bg-blue-600,
 .bg-blue-700,
 .bg-sky-600,
 .bg-indigo-600,
 .hover\:bg-blue-700:hover {
-  background-color: var(--muji-olive) !important;
-  color: #FFFFFF !important;
+  background: var(--sage) !important;
+  color: #424B3D !important;
+  box-shadow: none !important;
 }
+
+/* 按鈕內的白字也改成深色，避免反白看不清楚 */
+
+.bg-blue-600 *,
+.bg-blue-700 *,
+.bg-sky-600 *,
+.bg-indigo-600 * {
+  color: #424B3D !important;
+}
+
+/* ===== 所有藍色文字改成橄欖灰 ===== */
 
 .text-blue-600,
 .text-blue-700,
 .text-blue-800,
-.text-blue-900 {
-  color: #70765D !important;
+.text-blue-900,
+.text-indigo-600,
+.text-indigo-700 {
+  color: var(--sage-dark) !important;
 }
 
-/* 淡藍色區塊改成無印灰綠 */
+/* ===== 淡藍色區塊 ===== */
 
 .bg-blue-50,
-.bg-blue-50\/80 {
-  background-color: var(--muji-olive-light) !important;
+.bg-blue-50\/80,
+.bg-sky-50 {
+  background: var(--sage-soft) !important;
 }
 
-.border-blue-100 {
-  border-color: #D1D2C4 !important;
+.border-blue-100,
+.border-blue-200 {
+  border-color: #D5DDCB !important;
 }
 
-/* DAY 按鈕 */
+/* ===== DAY 按鈕 ===== */
 
 .ledger-day-btn {
-  background-color: #E7E5DD !important;
-  color: #68675F !important;
-  border-color: transparent !important;
+  background: transparent !important;
+  color: #77766D !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
 }
 
-.ledger-day-btn.bg-blue-600 {
-  background-color: var(--muji-olive) !important;
-  color: #FFFFFF !important;
+/* 選取後不反白，改成淡橄欖綠 */
+
+.ledger-day-btn.bg-blue-600,
+.ledger-day-btn.active {
+  background: var(--sage-soft) !important;
+  color: #4D5B43 !important;
+  border: 1px solid #C9D3BD !important;
+  font-weight: 700 !important;
 }
 
-/* 時間軸 */
-
-.timeline-container::before {
-  background: #D6D4CA !important;
-}
-
-/* 時間標籤 */
+/* ===== 時間標籤 ===== */
 
 .bg-blue-100,
 .bg-sky-100 {
-  background-color: #E4E5DA !important;
+  background: #E9E9DF !important;
 }
 
 .text-blue-800,
 .text-sky-800 {
-  color: #656B55 !important;
+  color: #65705A !important;
 }
 
-/* 輸入框與下拉選單 */
+/* ===== 時間軸 ===== */
+
+.timeline-container::before {
+  background: #DDD9CF !important;
+}
+
+/* ===== 表單：乾淨、沒有黑框 ===== */
 
 input,
 select,
 textarea {
-  background-color: #FFFFFF !important;
-  color: var(--muji-text) !important;
-  border-color: var(--muji-line) !important;
+  background: #FFFDF9 !important;
+  color: var(--text) !important;
+  border: 1px solid #E1DCD2 !important;
+  box-shadow: none !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #B9C4A9 !important;
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(170, 179, 154, 0.22) !important;
 }
 
 select option {
-  background-color: #FFFFFF !important;
-  color: var(--muji-text) !important;
+  background: #FFFDF9 !important;
+  color: var(--text) !important;
 }
 
-.focus\:ring-blue-500:focus {
-  --tw-ring-color: #B8BBA8 !important;
+/* ===== 各種選項／小標籤 ===== */
+
+.bg-yellow-50,
+.bg-amber-50 {
+  background: #F4EBDD !important;
 }
 
-/* 深色統計卡片改成暖灰褐色 */
+.text-amber-600,
+.text-orange-600 {
+  color: var(--coral) !important;
+}
+
+.bg-orange-50 {
+  background: var(--coral-soft) !important;
+}
+
+/* ===== 深色統計區塊改成柔和暖灰 ===== */
 
 .bg-slate-900,
 .bg-slate-800,
 .bg-blue-950 {
-  background-color: #66675E !important;
-  color: #FFFFFF !important;
+  background: #77796E !important;
+  color: #FFFDF8 !important;
 }
 
-/* 少量陶土色重點 */
+/* 深色區塊內的文字保持清楚 */
 
-.text-orange-600,
-.text-amber-600 {
-  color: var(--muji-orange) !important;
+.bg-slate-900 *,
+.bg-slate-800 *,
+.bg-blue-950 * {
+  color: #FFFDF8 !important;
 }
 
-.bg-orange-50,
-.bg-yellow-50 {
-  background-color: #F1E8DD !important;
-}
-
-/* 移除過重的陰影與黑色外框 */
+/* ===== 移除過重陰影 ===== */
 
 .shadow-md,
 .shadow-lg,
 .shadow-xl {
-  box-shadow: 0 1px 5px rgba(80, 77, 68, 0.06) !important;
+  box-shadow: 0 2px 8px var(--shadow) !important;
 }
 
-.border-black {
-  border-color: var(--muji-line) !important;
+/* ===== 取消黑色外框與黑色分隔線 ===== */
+
+.border-slate-900,
+.border-gray-900 {
+  border-color: var(--line) !important;
 }
 
-/* 選取文字 */
+hr {
+  border-color: var(--line) !important;
+}
+
+/* ===== 選取文字 ===== */
 
 ::selection {
-  background: #D9DDCD;
-  color: #4C4B43;
+  background: #DCE5D2;
+  color: #4B4A45;
 }
 ```
