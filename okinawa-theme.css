@@ -2,50 +2,51 @@
 /* 🌺 沖繩隨身助手｜沖繩日雜海島風 */
 
 :root {
-  --paper: #F6F3EC;
-  --card: #FCFBF7;
-  --card-soft: #F0EEE7;
+  --paper: #F4F1EE;
+  --card: #FFFFFF;
+  --card-soft: #F8F7F5;
   --white: #FFFFFF;
 
-  --text: #4B4A45;
-  --text-soft: #858178;
-  --line: #E5E1D8;
+  --text: #333333;
+  --text-soft: #8A8781;
+  --line: #EAE6E2;
 
-  /* 柔和海水藍 */
-  --sea: #7FAEB5;
-  --sea-dark: #527F87;
-  --sea-soft: #E4EFF0;
-  --sea-line: #C7DDE0;
+  /* 沖繩海水藍 */
+  --sea: #78AEB3;
+  --sea-dark: #557F84;
+  --sea-soft: #E8F1F1;
+  --sea-line: #D2E3E4;
 
-  /* 少量橄欖綠 */
-  --olive: #AAB39A;
-  --olive-dark: #69765F;
-  --olive-soft: #E5EBDD;
+  /* 柔和橄欖綠 */
+  --olive: #AEB6A0;
+  --olive-dark: #6F7965;
+  --olive-soft: #E9EDE4;
 
   /* 沙灘色 */
-  --sand: #E8D9C5;
-  --sand-soft: #F4EBDD;
+  --sand: #E9DCCB;
+  --sand-soft: #F5EEE5;
 
   /* 少量珊瑚橘 */
-  --coral: #C98B70;
-  --coral-soft: #F3E4DA;
+  --coral: #C9826D;
+  --coral-soft: #F5E6DE;
 
-  --shadow: rgba(91, 84, 70, 0.055);
+  --shadow: rgba(0, 0, 0, 0.05);
 }
 
-/* =================================
-   整體頁面
-================================= */
+
+/* ================================
+   基本頁面
+================================ */
 
 body {
   background-color: var(--paper) !important;
   color: var(--text) !important;
 }
 
-/* =================================
+
+/* ================================
    Header
-   不使用漸層，改成柔和海水藍
-================================= */
+================================ */
 
 header {
   background: var(--sea) !important;
@@ -57,8 +58,6 @@ header .text-white {
   color: #FFFFFF !important;
 }
 
-/* Header 裡的次要文字也維持清楚 */
-
 header .text-slate-500,
 header .text-slate-600,
 header .text-slate-700,
@@ -67,14 +66,27 @@ header .text-slate-900 {
   color: #FFFFFF !important;
 }
 
-/* =================================
-   主要卡片
-   不使用黑色外框
-================================= */
+
+/* ================================
+   卡片 / 背景
+================================ */
 
 .bg-white {
   background-color: var(--card) !important;
 }
+
+.bg-slate-50 {
+  background-color: var(--paper) !important;
+}
+
+.bg-slate-100 {
+  background-color: var(--card-soft) !important;
+}
+
+
+/* ================================
+   邊框
+================================ */
 
 .border,
 .border-black,
@@ -89,29 +101,16 @@ header .text-slate-900 {
   border-color: transparent !important;
 }
 
-/* 取消厚重黑色輪廓 */
-
 .rounded-xl,
 .rounded-2xl,
 .rounded-3xl {
   border-color: var(--line) !important;
 }
 
-/* =================================
-   背景區塊
-================================= */
 
-.bg-slate-50 {
-  background-color: var(--paper) !important;
-}
-
-.bg-slate-100 {
-  background-color: var(--card-soft) !important;
-}
-
-/* =================================
+/* ================================
    文字
-================================= */
+================================ */
 
 .text-slate-900,
 .text-slate-800 {
@@ -120,7 +119,7 @@ header .text-slate-900 {
 
 .text-slate-700,
 .text-slate-600 {
-  color: #66645D !important;
+  color: #5F5D58 !important;
 }
 
 .text-slate-500,
@@ -128,10 +127,10 @@ header .text-slate-900 {
   color: var(--text-soft) !important;
 }
 
-/* =================================
-   主要按鈕
-   柔和海水藍＋白色文字
-================================= */
+
+/* ================================
+   沖繩海水藍
+================================ */
 
 .bg-blue-600,
 .bg-blue-700,
@@ -144,8 +143,6 @@ header .text-slate-900 {
   box-shadow: none !important;
 }
 
-/* 按鈕裡的文字也維持白色 */
-
 .bg-blue-600 *,
 .bg-blue-700 *,
 .bg-sky-600 *,
@@ -153,9 +150,10 @@ header .text-slate-900 {
   color: #FFFFFF !important;
 }
 
-/* =================================
+
+/* ================================
    藍色文字
-================================= */
+================================ */
 
 .text-blue-600,
 .text-blue-700,
@@ -166,9 +164,10 @@ header .text-slate-900 {
   color: var(--sea-dark) !important;
 }
 
-/* =================================
+
+/* ================================
    淡藍色區塊
-================================= */
+================================ */
 
 .bg-blue-50,
 .bg-blue-50\/80,
@@ -181,19 +180,17 @@ header .text-slate-900 {
   border-color: var(--sea-line) !important;
 }
 
-/* =================================
-   DAY 按鈕
-   選取後使用淡藍底，不使用白字反白
-================================= */
+
+/* ================================
+   行程日期按鈕
+================================ */
 
 .ledger-day-btn {
   background-color: transparent !important;
-  color: #77766D !important;
+  color: #77746E !important;
   border: 1px solid transparent !important;
   box-shadow: none !important;
 }
-
-/* 目前選取的 DAY */
 
 .ledger-day-btn.bg-blue-600,
 .ledger-day-btn.active {
@@ -203,13 +200,14 @@ header .text-slate-900 {
   font-weight: 700 !important;
 }
 
-/* =================================
-   時間標籤
-================================= */
+
+/* ================================
+   淡藍提示區
+================================ */
 
 .bg-blue-100,
 .bg-sky-100 {
-  background-color: #E4EFF0 !important;
+  background-color: var(--sea-soft) !important;
 }
 
 .text-blue-800,
@@ -217,31 +215,32 @@ header .text-slate-900 {
   color: var(--sea-dark) !important;
 }
 
-/* =================================
-   時間軸
-================================= */
+
+/* ================================
+   行程時間軸
+================================ */
 
 .timeline-container::before {
-  background-color: #D9D8D0 !important;
+  background-color: #D8D5D0 !important;
 }
 
-/* =================================
-   表單
-   保持白色、清楚、無黑框
-================================= */
+
+/* ================================
+   輸入框
+================================ */
 
 input,
 select,
 textarea {
   background-color: #FFFFFF !important;
   color: var(--text) !important;
-  border: 1px solid #DEDAD0 !important;
+  border: 1px solid #DEDAD5 !important;
   box-shadow: none !important;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #AAA69C !important;
+  color: #AAA69F !important;
 }
 
 input:focus,
@@ -249,7 +248,7 @@ select:focus,
 textarea:focus {
   border-color: var(--sea) !important;
   outline: none !important;
-  box-shadow: 0 0 0 2px rgba(127, 174, 181, 0.22) !important;
+  box-shadow: 0 0 0 2px rgba(120, 174, 179, 0.20) !important;
 }
 
 select option {
@@ -257,14 +256,20 @@ select option {
   color: var(--text) !important;
 }
 
-/* =================================
-   記帳分類與小標籤
-================================= */
+
+/* ================================
+   沙灘色 / 黃色提示
+================================ */
 
 .bg-yellow-50,
 .bg-amber-50 {
   background-color: var(--sand-soft) !important;
 }
+
+
+/* ================================
+   珊瑚色
+================================ */
 
 .text-amber-600,
 .text-orange-600 {
@@ -275,9 +280,10 @@ select option {
   background-color: var(--coral-soft) !important;
 }
 
-/* =================================
-   橄欖綠輔助區塊
-================================= */
+
+/* ================================
+   橄欖綠
+================================ */
 
 .bg-green-50,
 .bg-emerald-50 {
@@ -289,10 +295,10 @@ select option {
   color: var(--olive-dark) !important;
 }
 
-/* =================================
-   深色統計卡片
-   改成柔和深灰藍
-================================= */
+
+/* ================================
+   深色區塊
+================================ */
 
 .bg-slate-900,
 .bg-slate-800,
@@ -307,19 +313,21 @@ select option {
   color: #FFFFFF !important;
 }
 
-/* =================================
-   取消過重陰影
-================================= */
+
+/* ================================
+   陰影
+================================ */
 
 .shadow-md,
 .shadow-lg,
 .shadow-xl {
-  box-shadow: 0 2px 8px var(--shadow) !important;
+  box-shadow: 0 3px 10px var(--shadow) !important;
 }
 
-/* =================================
-   分隔線與外框
-================================= */
+
+/* ================================
+   分隔線
+================================ */
 
 hr {
   border-color: var(--line) !important;
@@ -330,9 +338,10 @@ hr {
   border-color: var(--line) !important;
 }
 
-/* =================================
+
+/* ================================
    連結
-================================= */
+================================ */
 
 a {
   color: var(--sea-dark);
@@ -342,12 +351,13 @@ a:hover {
   color: #3F6970;
 }
 
-/* =================================
+
+/* ================================
    選取文字
-================================= */
+================================ */
 
 ::selection {
-  background-color: #D6E7E8;
-  color: #4B4A45;
+  background-color: #DCEBEC;
+  color: #333333;
 }
 ```
