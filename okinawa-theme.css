@@ -2,135 +2,81 @@
 /* 🌺 沖繩隨身助手｜沖繩日雜海島風 */
 
 :root {
-  /* ---------- 主背景 ---------- */
-  --paper: #F1E8DC;
-  --paper-deep: #E9DED0;
+  --bg: #F3EEE7;
+  --bg-deep: #EDE5DC;
 
-  /* ---------- 卡片 ---------- */
   --card: #FFFDF9;
   --card-soft: #F8F4EE;
+
+  --text: #4A4742;
+  --text-dark: #37342F;
+  --text-mid: #68625A;
+  --text-soft: #918A81;
+  --text-light: #AAA39A;
+
+  --line: #E6DED4;
+  --line-soft: #EEE8E1;
+
+  --accent: #8E8173;
+  --accent-dark: #75695D;
+  --accent-soft: #EEE7DE;
+
+  --terracotta: #B77B69;
+  --terracotta-soft: #F3E4DD;
+
+  --olive: #7E866F;
+  --olive-soft: #E8ECE2;
+
+  --sand: #B49B7F;
+  --sand-soft: #F1E9DE;
+
   --white: #FFFFFF;
 
-  /* ---------- 文字 ---------- */
-  --text: #3F3D39;
-  --text-dark: #33312E;
-  --text-soft: #858078;
-  --text-light: #A39D94;
-
-  /* ---------- 線條 ---------- */
-  --line: #E7DED3;
-  --line-soft: #EEE7DE;
-
-  /* ---------- 海島藍 ---------- */
-  --sea: #78AEB3;
-  --sea-dark: #527F84;
-  --sea-deep: #466F74;
-  --sea-soft: #E5F0F0;
-  --sea-light: #EEF5F5;
-  --sea-line: #C9DDDE;
-
-  /* ---------- 奶茶 ---------- */
-  --sand: #DCCBB6;
-  --sand-dark: #9B8065;
-  --sand-soft: #F5EEE5;
-
-  /* ---------- 珊瑚 ---------- */
-  --coral: #C9826D;
-  --coral-dark: #A96755;
-  --coral-soft: #F5E5DE;
-
-  /* ---------- 橄欖綠 ---------- */
-  --olive: #AAB49D;
-  --olive-dark: #6F7965;
-  --olive-soft: #E8EDE3;
-
-  /* ---------- 陰影 ---------- */
-  --shadow: rgba(91, 75, 58, 0.055);
+  --shadow-soft: rgba(82, 70, 58, 0.045);
+  --shadow: rgba(82, 70, 58, 0.065);
 }
 
 
 /* =========================================================
-   基本頁面
+   02. GLOBAL BACKGROUND
+   解決「整個 App 往下拉，畫面變奇怪」
 ========================================================= */
 
 html {
-  background: #F1E8DC !important;
+  background: var(--bg) !important;
+  min-height: 100%;
+  overscroll-behavior-y: contain;
 }
 
 body {
-  background: #F1E8DC !important;
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg) !important;
   color: var(--text) !important;
+
+  font-family:
+    "Noto Sans TC",
+    "PingFang TC",
+    "Microsoft JhengHei",
+    sans-serif;
+
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
+#root {
+  min-height: 100vh;
+  background: var(--bg) !important;
+}
 
-/* 可能使用 Tailwind min-h-screen 的區域 */
 .min-h-screen {
-  background-color: #F1E8DC !important;
+  min-height: 100vh !important;
+  background: var(--bg) !important;
 }
 
 
 /* =========================================================
-   HEADER
-========================================================= */
-
-header {
-  background: var(--sea) !important;
-  color: #FFFFFF !important;
-  border: none !important;
-  box-shadow: 0 2px 10px rgba(82, 127, 132, 0.12) !important;
-}
-
-header * {
-  border-color: transparent !important;
-}
-
-header .text-white,
-header .text-slate-500,
-header .text-slate-600,
-header .text-slate-700,
-header .text-slate-800,
-header .text-slate-900,
-header .text-black {
-  color: #FFFFFF !important;
-}
-
-
-/* =========================================================
-   CARD / 內容區塊
-========================================================= */
-
-.bg-white {
-  background-color: var(--card) !important;
-  border-color: var(--line-soft) !important;
-}
-
-.bg-slate-50,
-.bg-gray-50 {
-  background-color: #F1E8DC !important;
-}
-
-.bg-slate-100,
-.bg-gray-100 {
-  background-color: var(--card-soft) !important;
-}
-
-
-/* 卡片邊框 */
-.border,
-.border-slate-100,
-.border-slate-200,
-.border-slate-300,
-.border-gray-100,
-.border-gray-200,
-.border-gray-300 {
-  border-color: var(--line) !important;
-  border-width: 1px !important;
-}
-
-
-/* =========================================================
-   黑框全部移除
+   03. REMOVE HARSH BLACK OUTLINES
 ========================================================= */
 
 .border-black,
@@ -149,7 +95,107 @@ header .text-black {
 
 
 /* =========================================================
-   圓角
+   04. BASIC BACKGROUND COLORS
+========================================================= */
+
+.bg-white {
+  background-color: var(--card) !important;
+}
+
+.bg-gray-50,
+.bg-slate-50 {
+  background-color: var(--bg) !important;
+}
+
+.bg-gray-100,
+.bg-slate-100 {
+  background-color: var(--card-soft) !important;
+}
+
+
+/* =========================================================
+   05. BORDERS
+   細細的米灰線，不要黑框
+========================================================= */
+
+.border,
+.border-gray-100,
+.border-gray-200,
+.border-gray-300,
+.border-slate-100,
+.border-slate-200,
+.border-slate-300 {
+  border-color: var(--line) !important;
+}
+
+hr {
+  border-color: var(--line) !important;
+}
+
+
+/* =========================================================
+   06. TEXT
+========================================================= */
+
+.text-black {
+  color: var(--text-dark) !important;
+}
+
+.text-gray-900,
+.text-gray-800,
+.text-slate-900,
+.text-slate-800 {
+  color: var(--text-dark) !important;
+}
+
+.text-gray-700,
+.text-gray-600,
+.text-slate-700,
+.text-slate-600 {
+  color: var(--text-mid) !important;
+}
+
+.text-gray-500,
+.text-gray-400,
+.text-slate-500,
+.text-slate-400 {
+  color: var(--text-soft) !important;
+}
+
+
+/* =========================================================
+   07. HEADER
+   不再使用藍色
+========================================================= */
+
+header {
+  background: var(--card) !important;
+  color: var(--text-dark) !important;
+
+  border: 0 !important;
+  border-bottom: 1px solid var(--line-soft) !important;
+
+  box-shadow:
+    0 2px 12px var(--shadow-soft) !important;
+}
+
+header * {
+  border-color: transparent !important;
+}
+
+header .text-white,
+header .text-slate-500,
+header .text-slate-600,
+header .text-slate-700,
+header .text-slate-800,
+header .text-slate-900,
+header .text-black {
+  color: var(--text-dark) !important;
+}
+
+
+/* =========================================================
+   08. CARD / PAPER FEEL
 ========================================================= */
 
 .rounded-lg,
@@ -159,40 +205,35 @@ header .text-black {
   border-color: var(--line-soft) !important;
 }
 
+.shadow,
+.shadow-sm,
+.shadow-md,
+.shadow-lg,
+.shadow-xl,
+.shadow-2xl {
+  box-shadow:
+    0 4px 16px var(--shadow-soft) !important;
+}
+
 
 /* =========================================================
-   文字
+   09. BUTTONS
+   整體改成暖灰 / 奶茶
 ========================================================= */
 
-.text-black {
+button {
   color: var(--text) !important;
+  border-color: transparent !important;
 }
 
-.text-slate-900,
-.text-slate-800,
-.text-gray-900,
-.text-gray-800 {
-  color: var(--text-dark) !important;
-}
-
-.text-slate-700,
-.text-slate-600,
-.text-gray-700,
-.text-gray-600 {
-  color: #5F5B55 !important;
-}
-
-.text-slate-500,
-.text-slate-400,
-.text-gray-500,
-.text-gray-400 {
-  color: var(--text-soft) !important;
+button:hover {
+  border-color: transparent !important;
 }
 
 
-/* =========================================================
-   海島藍｜一般按鈕
-========================================================= */
+/* ---------------------------------------------------------
+   Blue button → warm taupe
+--------------------------------------------------------- */
 
 .bg-blue-600,
 .bg-blue-700,
@@ -200,44 +241,36 @@ header .text-black {
 .bg-sky-700,
 .bg-indigo-600,
 .bg-indigo-700 {
-  background-color: var(--sea) !important;
+  background-color: var(--accent) !important;
   color: #FFFFFF !important;
+
   border-color: transparent !important;
+
   box-shadow: none !important;
 }
 
-
-/* 一般藍色按鈕裡面的文字 */
-.bg-blue-600:not(.ledger-day-btn) *,
-.bg-blue-700:not(.ledger-day-btn) *,
-.bg-sky-600:not(.ledger-day-btn) *,
-.bg-sky-700:not(.ledger-day-btn) *,
-.bg-indigo-600:not(.ledger-day-btn) *,
-.bg-indigo-700:not(.ledger-day-btn) * {
+.bg-blue-600 *,
+.bg-blue-700 *,
+.bg-sky-600 *,
+.bg-sky-700 *,
+.bg-indigo-600 *,
+.bg-indigo-700 * {
   color: #FFFFFF !important;
 }
 
 
 /* hover */
+
 .hover\:bg-blue-700:hover,
 .hover\:bg-blue-600:hover {
-  background-color: var(--sea-dark) !important;
+  background-color: var(--accent-dark) !important;
   color: #FFFFFF !important;
 }
 
 
-/* active */
-.bg-blue-600:active,
-.bg-blue-700:active,
-.bg-sky-600:active {
-  background-color: var(--sea-dark) !important;
-  color: #FFFFFF !important;
-}
-
-
-/* =========================================================
-   藍色文字
-========================================================= */
+/* ---------------------------------------------------------
+   Blue text → warm brown
+--------------------------------------------------------- */
 
 .text-blue-600,
 .text-blue-700,
@@ -248,141 +281,144 @@ header .text-black {
 .text-sky-800,
 .text-indigo-600,
 .text-indigo-700 {
-  color: var(--sea-dark) !important;
+  color: var(--accent-dark) !important;
 }
 
 
-/* =========================================================
-   淡藍背景
-========================================================= */
+/* ---------------------------------------------------------
+   Blue light backgrounds → beige
+--------------------------------------------------------- */
 
 .bg-blue-50,
 .bg-blue-50\/80,
+.bg-blue-100,
 .bg-sky-50,
-.bg-sky-100,
-.bg-blue-100 {
-  background-color: var(--sea-soft) !important;
+.bg-sky-100 {
+  background-color: var(--accent-soft) !important;
 }
 
 .border-blue-100,
 .border-blue-200,
 .border-sky-100,
 .border-sky-200 {
-  border-color: var(--sea-line) !important;
+  border-color: var(--line) !important;
 }
 
 
 /* =========================================================
-   🌟 LEDGER / 日期按鈕
-   這裡特別處理「選取後變白看不到字」問題
+   10. SELECTED / ACTIVE BUTTON
+   這裡特別處理「點下去變白看不到」
 ========================================================= */
+
+button.active,
+button[aria-selected="true"],
+.active,
+[aria-selected="true"] {
+  background-color: var(--accent-soft) !important;
+  color: var(--accent-dark) !important;
+  border-color: var(--line) !important;
+}
+
+button.active span,
+button.active svg,
+button[aria-selected="true"] span,
+button[aria-selected="true"] svg,
+.active span,
+.active svg,
+[aria-selected="true"] span,
+[aria-selected="true"] svg {
+  color: var(--accent-dark) !important;
+}
+
+
+/* ---------------------------------------------------------
+   Ledger day buttons
+--------------------------------------------------------- */
 
 .ledger-day-btn {
   background-color: transparent !important;
-  color: #777169 !important;
+  color: var(--text-soft) !important;
+
   border: 1px solid transparent !important;
+
   box-shadow: none !important;
 }
 
-
-/* 滑過 */
 .ledger-day-btn:hover {
-  background-color: var(--sea-light) !important;
-  color: var(--sea-dark) !important;
-  border-color: var(--sea-line) !important;
+  background-color: var(--accent-soft) !important;
+  color: var(--accent-dark) !important;
+  border-color: var(--line) !important;
 }
 
-
-/* 被選取 */
 .ledger-day-btn.active,
 .ledger-day-btn.bg-blue-600,
 .ledger-day-btn.bg-blue-700,
 .ledger-day-btn[aria-selected="true"] {
-  background-color: var(--sea-soft) !important;
-  color: var(--sea-dark) !important;
-  border: 1px solid var(--sea-line) !important;
+  background-color: var(--accent-soft) !important;
+  color: var(--accent-dark) !important;
+
+  border: 1px solid var(--line) !important;
+
   font-weight: 700 !important;
   box-shadow: none !important;
 }
 
-
-/* ⭐ 選取按鈕裡面的文字也強制維持深色 */
 .ledger-day-btn.active *,
 .ledger-day-btn.bg-blue-600 *,
 .ledger-day-btn.bg-blue-700 *,
 .ledger-day-btn[aria-selected="true"] * {
-  color: var(--sea-dark) !important;
+  color: var(--accent-dark) !important;
 }
 
 
 /* =========================================================
-   一般按鈕
-========================================================= */
-
-button {
-  border-color: transparent !important;
-  color: var(--text) !important;
-}
-
-button:hover {
-  border-color: transparent !important;
-}
-
-
-/* 選取 / active 狀態不要突然變白 */
-button:active {
-  background-color: var(--sea-soft) !important;
-  color: var(--sea-dark) !important;
-}
-
-button:active * {
-  color: var(--sea-dark) !important;
-}
-
-
-/* =========================================================
-   表單
+   11. INPUT / SELECT / TEXTAREA
 ========================================================= */
 
 input,
 select,
 textarea {
-  background-color: #FFFFFF !important;
+  background-color: var(--card) !important;
   color: var(--text) !important;
-  border: 1px solid #DED7CE !important;
+
+  border: 1px solid var(--line) !important;
+
   box-shadow: none !important;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #AAA39A !important;
+  color: var(--text-light) !important;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-  border-color: var(--sea) !important;
+  border-color: var(--accent) !important;
   outline: none !important;
-  box-shadow: 0 0 0 2px rgba(120, 174, 179, 0.18) !important;
+
+  box-shadow:
+    0 0 0 2px rgba(142, 129, 115, 0.10) !important;
 }
 
 select option {
-  background-color: #FFFFFF !important;
+  background-color: var(--card) !important;
   color: var(--text) !important;
 }
 
 
 /* =========================================================
-   時間軸
+   12. TIMELINE
 ========================================================= */
 
 .timeline-container::before {
-  background-color: #D8CEC2 !important;
+  background-color: #D9D0C6 !important;
 }
 
 
 /* =========================================================
-   奶茶 / 黃色區塊
+   13. YELLOW / AMBER
+   → 奶茶色
 ========================================================= */
 
 .bg-yellow-50,
@@ -395,28 +431,30 @@ select option {
 .text-amber-600,
 .text-orange-600,
 .text-yellow-700 {
-  color: var(--sand-dark) !important;
+  color: var(--sand) !important;
 }
 
 
 /* =========================================================
-   珊瑚色
+   14. RED / ORANGE
+   → 柔和磚紅
 ========================================================= */
 
 .bg-orange-50,
 .bg-red-50 {
-  background-color: var(--coral-soft) !important;
+  background-color: var(--terracotta-soft) !important;
 }
 
 .text-red-600,
 .text-red-700,
 .text-orange-600 {
-  color: var(--coral-dark) !important;
+  color: var(--terracotta) !important;
 }
 
 
 /* =========================================================
-   綠色 / 完成狀態
+   15. GREEN
+   → 柔和橄欖綠
 ========================================================= */
 
 .bg-green-50,
@@ -430,13 +468,13 @@ select option {
 .text-green-700,
 .text-emerald-600,
 .text-emerald-700 {
-  color: var(--olive-dark) !important;
+  color: var(--olive) !important;
 }
 
 
 /* =========================================================
-   深色區塊
-   不使用黑色，改成柔和灰藍
+   16. DARK PANELS
+   原本太黑 → 改成咖啡灰
 ========================================================= */
 
 .bg-slate-900,
@@ -444,8 +482,9 @@ select option {
 .bg-blue-950,
 .bg-gray-900,
 .bg-gray-800 {
-  background-color: #68777A !important;
+  background-color: #756E66 !important;
   color: #FFFFFF !important;
+
   border-color: transparent !important;
 }
 
@@ -459,56 +498,115 @@ select option {
 
 
 /* =========================================================
-   RESERVATION BADGE
+   17. RESERVATION BADGE
 ========================================================= */
 
 .badge-res {
-  background-color: var(--coral-soft) !important;
-  color: var(--coral-dark) !important;
+  background-color: var(--terracotta-soft) !important;
+  color: var(--terracotta) !important;
+
   border: none !important;
 }
 
 
 /* =========================================================
-   LINKS
+   18. LINKS
 ========================================================= */
 
 a {
-  color: var(--sea-dark);
+  color: var(--accent-dark);
   text-decoration-color: transparent;
 }
 
 a:hover {
-  color: var(--sea-deep);
+  color: var(--text-dark);
   text-decoration-color: transparent;
 }
 
 
 /* =========================================================
-   SHADOW
+   19. HOVER
 ========================================================= */
 
-.shadow,
-.shadow-sm,
-.shadow-md,
-.shadow-lg,
-.shadow-xl,
-.shadow-2xl {
-  box-shadow: 0 4px 14px var(--shadow) !important;
+.hover\:bg-white:hover {
+  background-color: var(--accent-soft) !important;
+  color: var(--accent-dark) !important;
+}
+
+.hover\:bg-gray-50:hover,
+.hover\:bg-gray-100:hover,
+.hover\:bg-slate-50:hover,
+.hover\:bg-slate-100:hover {
+  background-color: var(--accent-soft) !important;
 }
 
 
 /* =========================================================
-   HR
+   20. NAV / BOTTOM NAV
 ========================================================= */
 
-hr {
-  border-color: var(--line) !important;
+.bottom-nav {
+  background: rgba(255, 253, 249, 0.97) !important;
+
+  border-top: 1px solid var(--line-soft) !important;
+
+  box-shadow:
+    0 -4px 16px rgba(82, 70, 58, 0.035) !important;
 }
 
 
 /* =========================================================
-   FOCUS
+   21. MAP / TOOL BUTTONS
+========================================================= */
+
+.tool-btn {
+  background: var(--card) !important;
+  color: var(--text) !important;
+
+  border: 1px solid var(--line-soft) !important;
+
+  box-shadow:
+    0 2px 8px var(--shadow-soft) !important;
+}
+
+.nav-map-btn {
+  background-color: var(--card-soft) !important;
+  color: var(--text) !important;
+
+  border: 1px solid var(--line) !important;
+}
+
+.ticket-btn {
+  background-color: var(--card) !important;
+
+  border: 1px solid var(--line-soft) !important;
+
+  box-shadow:
+    0 2px 8px var(--shadow-soft) !important;
+}
+
+
+/* =========================================================
+   22. LEDGER
+========================================================= */
+
+.ledger-row {
+  border-bottom: 1px solid var(--line-soft) !important;
+}
+
+.ledger-input {
+  background: transparent !important;
+  color: var(--text) !important;
+
+  border: none !important;
+  border-bottom: 1px solid var(--line) !important;
+
+  box-shadow: none !important;
+}
+
+
+/* =========================================================
+   23. FOCUS
 ========================================================= */
 
 *:focus {
@@ -516,61 +614,46 @@ hr {
 }
 
 *:focus-visible {
-  outline: 2px solid rgba(120, 174, 179, 0.35) !important;
+  outline: 2px solid rgba(142, 129, 115, 0.25) !important;
   outline-offset: 2px;
 }
 
 
 /* =========================================================
-   去除所有明顯黑色邊框
+   24. SELECTION
 ========================================================= */
 
+::selection {
+  background-color: #E5DDD3;
+  color: var(--text-dark);
+}
+
+
+/* =========================================================
+   25. REMOVE REMAINING HARSH BLACK BORDERS
+========================================================= */
+
+.border-black,
 .border-gray-900,
 .border-gray-800,
 .border-slate-900,
-.border-slate-800,
-.border-black {
+.border-slate-800 {
   border-color: transparent !important;
 }
 
 
 /* =========================================================
-   Selection
+   26. FINAL OVERSCROLL SAFETY
 ========================================================= */
 
-::selection {
-  background-color: #DCEBEC;
-  color: #333333;
+html,
+body,
+#root,
+.min-h-screen {
+  background-color: var(--bg) !important;
 }
 
 
 /* =========================================================
-   特殊：避免 Tailwind hover / active 把按鈕變成白色
+   END
 ========================================================= */
-
-.hover\:bg-white:hover {
-  background-color: var(--sea-light) !important;
-  color: var(--sea-dark) !important;
-}
-
-.hover\:bg-gray-50:hover,
-.hover\:bg-gray-100:hover,
-.hover\:bg-slate-50:hover,
-.hover\:bg-slate-100:hover {
-  background-color: var(--sea-light) !important;
-}
-
-
-/* =========================================================
-   最後保護：選取狀態
-========================================================= */
-
-.active,
-[aria-selected="true"] {
-  color: var(--sea-dark) !important;
-}
-
-.active *,
-[aria-selected="true"] * {
-  color: var(--sea-dark) !important;
-}
