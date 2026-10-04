@@ -1402,35 +1402,13 @@ if (dayTotalBox) {
             return;
         }
 
-        // Firebase 還沒有資料，但這台裝置已有舊的 localStorage
-        // → 自動把舊資料搬到 Firebase
-        const hasLocalData = Object.values(customSpots).some(
-            arr => Array.isArray(arr) && arr.length > 0
+        // 雲端沒有自訂站點時，同步清空本機舊站點
+       customSpots = { 0: [], 1: [], 2: [], 3: [] };
+
+       localStorage.setItem(
+            STORAGE_CUSTOM_SPOTS_KEY,
+            JSON.stringify(customSpots)
         );
-
-        if (hasLocalData) {
-            for (const dayIdx of Object.keys(customSpots)) {
-                const spots = customSpots[dayIdx] || [];
-
-                for (const spot of spots) {
-                    await window.dbPush(
-                        window.dbRef(
-                            window.dbDatabase,
-                            `okinawa_custom_spots/${dayIdx}`
-                        ),
-                        {
-                            time: spot.time || '任意時間',
-                            name: spot.name || '',
-                            memo: spot.memo || '',
-                            map: spot.map || spot.name || '',
-                            createdAt: spot.createdAt || Date.now()
-                        }
-                    );
-                }
-            }
-
-            showToast("☁️ 原有自訂站點已同步到雲端！");
-        }
 
         renderDay(currentDayIdx);
 
