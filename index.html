@@ -678,7 +678,16 @@
             document.getElementById('current-day-title').innerText = dayData.title;
             
             const userAdded = customSpots[idx] || [];
-            const allSpots = [...dayData.spots, ...userAdded];
+            const allSpots = [...dayData.spots, ...userAdded].sort((a, b) => {
+                const toMinutes = (time) => {
+                    const match = String(time || '').match(/(\d{1,2}):(\d{2})/);
+                    return match
+                        ? Number(match[1]) * 60 + Number(match[2])
+                        : Infinity;
+                };
+
+                return toMinutes(a.time) - toMinutes(b.time);
+            });
             document.getElementById('spot-count').innerText = `${allSpots.length} 個行程站點`;
 
             const box = document.getElementById('timeline-box');
@@ -705,7 +714,14 @@
                             <div class="flex items-center justify-between gap-1 mb-1">
                                 <span class="text-xs font-bold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-md">
                                     🕒 ${spot.time}
-                                </span>
+                                </span>${userAdded.includes(spot) && spot.id ? `
+                                <button
+                                    onclick="deleteCustomSpot(${idx}, '${spot.id}')"
+                                    class="text-xs text-red-500 px-2 py-1"
+                                     type="button">
+                                     刪除
+                                     </button>
+                                     ` : ''}
                             </div>
                             <h3 class="text-sm font-bold text-slate-800 mt-1">${spot.name}</h3>
                             <p class="text-xs text-slate-600 mt-1 leading-relaxed">${spot.memo || ''}</p>
@@ -1419,7 +1435,36 @@ if (dayTotalBox) {
         renderDay(currentDayIdx);
     });
 }
-        
+        async function deleteCustomSpot(dayIdx, spotId) {
+    if (!confirm('確定要刪除這個自訂站點嗎？')) return;
+
+    try {
+        if (typeof window.dbRemove !== 'function') {
+            throw new Error('Firebase 尚未連線');
+        }
+
+        await window.dbRemove(
+            window.dbRef(
+                window.dbDatabase,
+                `okinawa_custom_spots/${dayIdx}/${spotId}`
+            )
+        );
+
+        customSpots[dayIdx] = (customSpots[dayIdx] || [])
+            .filter(spot => spot.id !== spotId);
+
+        localStorage.setItem(
+            STORAGE_CUSTOM_SPOTS_KEY,
+            JSON.stringify(customSpots)
+        );
+
+        renderDay(currentDayIdx);
+        showToast('✅ 自訂站點已刪除');
+    } catch (error) {
+        console.error('刪除站點失敗：', error);
+        showToast('⚠️ 刪除失敗，請確認網路後重試');
+    }
+}
         async function saveCustomSpot() {
     const dayIdx = parseInt(document.getElementById('modal-spot-day').value, 10);
     const time = document.getElementById('modal-spot-time').value.trim() || '任意時間';
